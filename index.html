@@ -9,14 +9,17 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
-  <link rel="stylesheet" href="./styles.css">
-  <title>Visual Academy · Light Lab 0.2</title>
+  <link rel="stylesheet" href="./styles.css?v=0.2.1">
+  <title>Visual Academy · Light Lab 0.2.1</title>
 </head>
 <body>
   <main class="app">
     <header class="topbar">
       <div class="brand"><span class="brand-icon" aria-hidden="true">◒</span><div><span class="eyebrow" data-i18n="prototype">EXPERIMENTAL · V0.2</span><h1>Visual Academy</h1></div></div>
-      <button id="langBtn" class="light-btn" type="button" aria-label="Switch language">FI</button>
+      <div class="header-controls">
+        <label class="language-picker"><span aria-hidden="true">🌐</span><select id="langSelect" aria-label="Language / Kieli"><option value="en">English</option><option value="fi">Suomi</option></select></label>
+        <button id="settingsBtn" type="button" class="settings-button" aria-label="Settings" data-i18n-aria="settings" title="Settings">⚙</button>
+      </div>
     </header>
     <section class="intro"><div><span class="kicker" data-i18n="module">MODULE 01 · LIGHT</span><h2 data-i18n="lead">Discover what your edits really do.</h2></div><span class="duration">3–5 MIN</span></section>
     <nav class="lesson-tabs" id="lessonTabs" aria-label="Lessons">
@@ -44,16 +47,22 @@
             <text x="38" y="205" class="axis-text" id="axisLeft">Shadows</text><text x="271" y="205" class="axis-text" id="axisRight">Highlights</text><text x="38" y="9" class="axis-text" id="axisY">Output ↑</text>
           </svg></div>
           <div class="curve-controls"><span id="settingLabel" class="value-label">Move the glowing dot</span><span id="settingValue" class="value-pill">64 → 64</span></div>
-          <div class="mini-actions"><button id="hintBtn" type="button" class="secondary-btn" data-i18n="hint">✦ Give me a hint</button><button id="exportBtn" type="button" class="subtle-btn" data-i18n="backup">Export</button><button id="importBtn" type="button" class="subtle-btn" data-i18n="restore">Import</button><input id="importInput" type="file" accept="application/json,.json" hidden></div>
+          <div class="mini-actions"><button id="hintBtn" type="button" class="secondary-btn" data-i18n="hint">✦ Give me a hint</button></div>
         </div>
-        <section class="coach" aria-live="polite"><div class="coach-heading"><span class="coach-dot" id="coachDot"></span><strong id="coachTitle">Look at the shadows</strong></div><p id="coachBody"></p><div class="metrics" id="metricLine"></div></section>
+        <section class="coach" id="coach" aria-live="polite"><div class="coach-heading"><span class="coach-dot" id="coachDot"></span><strong id="coachTitle">Look at the shadows</strong></div><p id="coachBody"></p><div class="metrics" id="metricLine"></div></section>
         <details class="theory" id="theory"><summary><span>◎</span><span data-i18n="why">What's happening here?</span><span class="expand-icon">⌄</span></summary><div class="theory-content"><p id="theoryBody"></p><p id="fourQuestions"></p></div></details>
         <section class="check-panel" aria-labelledby="questionHeading"><span class="section-label" data-i18n="check">CHECK YOUR REASONING</span><h3 id="questionHeading"></h3><div class="answer-grid" id="answers"></div><div class="feedback" id="feedback" aria-live="polite" hidden></div><button id="nextBtn" class="primary-btn" type="button" disabled><span id="nextLabel" data-i18n="continue">Next lesson</span><span aria-hidden="true"> →</span></button></section>
         <p class="footnote" data-i18n="footnote">An 8-bit pixel-based learning model, not a RAW editor. The histogram and feedback are calculated from the modified image, not staged animations.</p>
       </section>
     </div>
-    <footer class="site-footer"><span data-i18n="privacy">Local-first, no account. Progress stays on this device until exported.</span><span>v0.2 · TEST</span></footer>
+    <footer class="site-footer"><span data-i18n="privacy">Local-first, no account. Progress stays on this device until exported.</span><span>v0.2.1 · TEST</span></footer>
+    <dialog id="settingsDialog" class="settings-modal" aria-labelledby="settingsHeading">
+      <div class="settings-head"><h2 id="settingsHeading" data-i18n="settings">Settings</h2><button id="closeSettings" type="button" class="close-settings" aria-label="Close" data-i18n-aria="close">×</button></div>
+      <p data-i18n="settingsDescription">Learning progress stays on this device. Save a backup file or restore one here.</p>
+      <div class="settings-actions"><button id="exportBtn" type="button" class="secondary-btn" data-i18n="backup">Export backup</button><button id="importBtn" type="button" class="secondary-btn" data-i18n="restore">Import backup</button><input id="importInput" type="file" accept="application/json,.json" hidden></div>
+      <p class="settings-note" data-i18n="offlineNote">Google Drive sync is not available in this prototype. Backups are manual.</p>
+    </dialog>
   </main>
-  <script src="./app.js" defer></script>
+  <script src="./app.js?v=0.2.1" defer></script>
 </body>
 </html>
