@@ -4,81 +4,56 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#101a27">
-  <meta name="description" content="Learn the why behind every edit. Short interactive lessons about image tones, curves and histograms.">
   <meta name="color-scheme" content="dark">
+  <meta name="description" content="Learn photo-editing principles by experimenting with real pixel-based tonal curves and histograms.">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./styles.css">
-  <title>Visual Academy · Prototype</title>
+  <title>Visual Academy · Light Lab 0.2</title>
 </head>
 <body>
-  <div class="app">
+  <main class="app">
     <header class="topbar">
-      <div class="brand">
-        <span class="brand-icon" aria-hidden="true">◉</span>
-        <div><span class="eyebrow" data-i18n="prototype">PROTOTYPE · 0.1</span><h1>Visual Academy</h1></div>
-      </div>
-      <div class="top-actions">
-        <button type="button" id="langBtn" class="light-btn" aria-label="Switch language to Finnish">FI</button>
-      </div>
+      <div class="brand"><span class="brand-icon" aria-hidden="true">◒</span><div><span class="eyebrow" data-i18n="prototype">EXPERIMENTAL · V0.2</span><h1>Visual Academy</h1></div></div>
+      <button id="langBtn" class="light-btn" type="button" aria-label="Switch language">FI</button>
     </header>
-
-    <section class="intro" aria-labelledby="intro-heading">
-      <div class="intro-copy"><span class="kicker" data-i18n="moduleName">MODULE 01 · UNDERSTANDING LIGHT</span><h2 id="intro-heading" data-i18n="lead">See what your edits actually do.</h2></div>
-      <span class="duration">3–5 <span data-i18n="min">MIN</span></span>
-    </section>
-
-    <nav class="lesson-tabs" aria-label="Lessons" id="lessonTabs">
-      <button type="button" class="lesson-tab active" data-lesson="0" aria-current="step"><span class="tab-number">01</span><span data-i18n="tab0">Shadows</span><span class="tab-tick" id="tick0"></span></button>
-      <button type="button" class="lesson-tab" data-lesson="1"><span class="tab-number">02</span><span data-i18n="tab1">Histogram</span><span class="tab-tick" id="tick1"></span></button>
-      <button type="button" class="lesson-tab" data-lesson="2"><span class="tab-number">03</span><span data-i18n="tab2">Midtones</span><span class="tab-tick" id="tick2"></span></button>
+    <section class="intro"><div><span class="kicker" data-i18n="module">MODULE 01 · LIGHT</span><h2 data-i18n="lead">Discover what your edits really do.</h2></div><span class="duration">3–5 MIN</span></section>
+    <nav class="lesson-tabs" id="lessonTabs" aria-label="Lessons">
+      <button class="lesson-tab active" type="button" data-lesson="0"><span class="tab-number">01</span><span data-i18n="tab0">Hidden details</span><span class="tab-tick" id="tick0"></span></button>
+      <button class="lesson-tab" type="button" data-lesson="1"><span class="tab-number">02</span><span data-i18n="tab1">Histogram</span><span class="tab-tick" id="tick1"></span></button>
+      <button class="lesson-tab" type="button" data-lesson="2"><span class="tab-number">03</span><span data-i18n="tab2">Forest tones</span><span class="tab-tick" id="tick2"></span></button>
     </nav>
-
     <div class="workspace">
-      <section class="left-pane" aria-label="Live image preview">
-        <div class="lesson-brief">
-          <p class="eyebrow" id="lessonKicker"></p>
-          <h3 id="lessonTitle"></h3>
-          <p id="lessonGoal"></p>
-        </div>
+      <section class="left-pane" aria-labelledby="lessonTitle">
+        <div class="lesson-brief"><p class="eyebrow" id="lessonKicker"></p><h3 id="lessonTitle"></h3><p id="lessonGoal"></p></div>
         <div class="preview-sticky">
-          <div class="preview-header"><span class="preview-title"><span class="live-dot"></span><span data-i18n="live">LIVE PREVIEW</span></span><button type="button" class="compare-btn" id="compareBtn" aria-label="Hold to see original image"><span aria-hidden="true">◀</span> <span data-i18n="hold">Hold: original</span></button></div>
-          <div class="image-frame"><canvas id="scene" width="720" height="405" role="img" aria-label="Training illustration: tone adjustments are applied to its actual pixels"></canvas><span id="originalBadge" class="original-badge" hidden data-i18n="original">ORIGINAL</span></div>
-          <div class="hist-panel">
-            <div class="hist-head"><span data-i18n="histogram">HISTOGRAM</span><div class="legend"><span><i class="legend-box before"></i><span data-i18n="before">Before</span></span><span><i class="legend-box after"></i><span data-i18n="after">After</span></span></div></div>
-            <canvas id="hist" width="720" height="108" role="img" aria-label="Measured source and edited-image luminance histograms"></canvas>
-            <div class="hist-labels"><span data-i18n="dark">Dark</span><span data-i18n="mid">Mid</span><span data-i18n="bright">Bright</span></div>
-          </div>
+          <div class="preview-header"><span class="preview-title"><span class="live-dot"></span><span data-i18n="live">LIVE PIXEL PREVIEW</span></span><button id="compareBtn" type="button" class="compare-btn" data-i18n="hold">Hold for original</button></div>
+          <div class="image-frame"><canvas id="scene" width="720" height="405" role="img" aria-label="Interactive tone-map illustration"></canvas><span id="originalBadge" class="original-badge" hidden data-i18n="original">ORIGINAL</span></div>
+          <div class="hist-panel"><div class="hist-head"><span data-i18n="histogram">LIVE HISTOGRAM</span><div class="legend"><span><i class="legend-box before"></i><span data-i18n="before">Before</span></span><span><i class="legend-box after"></i><span data-i18n="after">After</span></span></div></div><canvas id="hist" width="720" height="100" role="img" aria-label="Histogram counted from original and adjusted pixels"></canvas><div class="hist-labels"><span data-i18n="dark">Shadows</span><span data-i18n="mid">Midtones</span><span data-i18n="bright">Highlights</span></div></div>
         </div>
       </section>
-
-      <section class="right-pane" aria-label="Lesson controls and feedback">
+      <section class="right-pane">
         <div class="instruction">
-          <div class="instruction-head"><span class="section-label" data-i18n="try">TRY IT YOURSELF</span><button type="button" id="resetBtn" class="text-button" data-i18n="reset">↺ Reset</button></div>
+          <div class="instruction-head"><span class="section-label" data-i18n="try">YOUR EXPERIMENT</span><button id="resetBtn" class="text-button" type="button" data-i18n="reset">↺ Reset</button></div>
           <p class="instruction-detail" id="instructionText"></p>
-          <div class="curve-wrap"><svg viewBox="0 0 360 205" id="curve" role="img" aria-label="Interactive tonal curve. Drag the highlighted control point vertically." style="touch-action:none">
-            <rect x="39" y="10" width="292" height="165" rx="5" class="curve-bg" />
-            <g id="curveGrid"></g>
-            <line x1="39" y1="175" x2="331" y2="10" class="identity"/>
-            <path id="curveLine" class="tone-line" d=""/>
-            <circle id="handleHalo" r="16" cx="112" cy="134" class="handle-halo"/>
-            <circle id="curveHandle" r="8" cx="112" cy="134" class="handle"/>
-            <text x="41" y="198" class="axis-text" id="axisLeft">Shadows</text>
-            <text x="284" y="198" class="axis-text" id="axisRight">Lights</text>
-            <text x="41" y="8" class="axis-text" id="axisY">Output ↑</text>
+          <div class="curve-wrap"><svg id="curve" viewBox="0 0 360 213" role="img" aria-label="Tone curve with draggable control points" style="touch-action:none">
+            <rect x="36" y="10" width="292" height="173" rx="5" class="curve-bg"/>
+            <g id="curveGrid"></g><line x1="36" y1="183" x2="328" y2="10" class="identity"/>
+            <path id="curveLine" class="tone-line" d=""/><g id="handles"></g>
+            <text x="38" y="205" class="axis-text" id="axisLeft">Shadows</text><text x="271" y="205" class="axis-text" id="axisRight">Highlights</text><text x="38" y="9" class="axis-text" id="axisY">Output ↑</text>
           </svg></div>
-          <div class="curve-controls"><span id="settingLabel" class="value-label"></span><span id="settingValue" class="value-pill">64 → 64</span></div>
-          <input type="range" id="adjustSlider" min="0" max="100" step="1" value="0" aria-label="Tone adjustment"/>
-          <div class="mini-actions"><button type="button" id="hintBtn" class="secondary-btn"><span aria-hidden="true">✦</span> <span data-i18n="hint">Hint</span></button><span id="practiceStatus" class="status" aria-live="polite"></span></div>
+          <div class="curve-controls"><span id="settingLabel" class="value-label">Move the glowing dot</span><span id="settingValue" class="value-pill">64 → 64</span></div>
+          <div class="mini-actions"><button id="hintBtn" type="button" class="secondary-btn" data-i18n="hint">✦ Give me a hint</button><button id="exportBtn" type="button" class="subtle-btn" data-i18n="backup">Export</button><button id="importBtn" type="button" class="subtle-btn" data-i18n="restore">Import</button><input id="importInput" type="file" accept="application/json,.json" hidden></div>
         </div>
-        <details class="theory" id="theory"><summary><span>◎</span><span data-i18n="why">Why does this work?</span><span class="expand-icon">⌄</span></summary><p id="theoryBody"></p></details>
-        <section class="check-panel" aria-labelledby="questionHeading"><span class="section-label" data-i18n="check">CHECK YOUR UNDERSTANDING</span><h3 id="questionHeading"></h3><div class="answer-grid" id="answers"></div><div class="feedback" id="feedback" aria-live="polite" hidden></div><div class="continue-wrap"><button type="button" id="nextBtn" class="primary-btn" disabled><span data-i18n="continue">Continue</span> <span aria-hidden="true">→</span></button></div></section>
-        <p class="footnote" data-i18n="footnote">Pixel-based 8-bit teaching model. The histogram is measured from the actual edited image. Not a color-managed RAW editor.</p>
+        <section class="coach" aria-live="polite"><div class="coach-heading"><span class="coach-dot" id="coachDot"></span><strong id="coachTitle">Look at the shadows</strong></div><p id="coachBody"></p><div class="metrics" id="metricLine"></div></section>
+        <details class="theory" id="theory"><summary><span>◎</span><span data-i18n="why">What's happening here?</span><span class="expand-icon">⌄</span></summary><div class="theory-content"><p id="theoryBody"></p><p id="fourQuestions"></p></div></details>
+        <section class="check-panel" aria-labelledby="questionHeading"><span class="section-label" data-i18n="check">CHECK YOUR REASONING</span><h3 id="questionHeading"></h3><div class="answer-grid" id="answers"></div><div class="feedback" id="feedback" aria-live="polite" hidden></div><button id="nextBtn" class="primary-btn" type="button" disabled><span id="nextLabel" data-i18n="continue">Next lesson</span><span aria-hidden="true"> →</span></button></section>
+        <p class="footnote" data-i18n="footnote">An 8-bit pixel-based learning model, not a RAW editor. The histogram and feedback are calculated from the modified image, not staged animations.</p>
       </section>
     </div>
-    <footer class="site-footer"><span data-i18n="local">Runs locally. No account. Your progress stays on this device.</span><span>v0.1</span></footer>
-  </div>
+    <footer class="site-footer"><span data-i18n="privacy">Local-first, no account. Progress stays on this device until exported.</span><span>v0.2 · TEST</span></footer>
+  </main>
   <script src="./app.js" defer></script>
 </body>
 </html>

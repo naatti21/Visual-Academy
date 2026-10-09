@@ -1,32 +1,35 @@
-# PROJECT STATE · Visual Academy / KuvaAkatemia
+# Visual Academy / KuvaAkatemia — PROJECT_STATE
 
-Updated: 2026-10-08
-Version: 0.1 prototype
-Status: Ready for first mobile user test, not commercial release.
+Updated: 2026-10-09
+Version: 0.2 test candidate. Brand/name NOT decided.
 
-## Ground rules
-- Mobile-first 3–5-minute lessons, in English by default; Finnish optional.
-- Teach WHY adjustments work using genuine pixel transformations and measured histogram data.
-- Begin with simple drawn scenes; progress gradually to real photos, RAW, RGB curves, masks, targeted colors, noise, double exposure and LUTs.
-- Adapt future exercise difficulty from demonstrated understanding; no needless forced repetition or unearned skipping.
-- Separate project and repository from `naatti21/osakevahti`.
-- Commercial model and permanent name intentionally undecided. 'Visual Academy' is a working label only.
+## Purpose
+Mobile-first, program-independent learning of photo editing by doing. 3–5-minute lessons, beginner to advanced, real cause and effect, effective feedback, adaptive pacing and thoughtful retrieval practice.
 
-## Implemented
-- Three short lessons, in English and Finnish.
-- Mobile sticky image preview while curve and feedback are edited below.
-- Before/after luminance histograms from pixel data, draggable curve and range slider.
-- Multiple-choice question and immediate explanations, local progress and PWA shell.
+## Current implementation
+- Three introductory lessons (alley/shadow discovery; histogram; forest/midtones and highlight preservation).
+- EN default, FI optional.
+- Actual canvas pixels + 8-bit luminance mapping + measured before/after histograms and feedback.
+- Detailed procedurally drawn scenes with source information, not magic reveals.
+- Optional reasoning questions, meaningful edit needed to finish; a wildly clipped or excessively bright edit is not accepted.
+- Local progress, previous v0.1 progress migration, last lesson, manual JSON export/import, service worker and manifest.
 
-## To test with user
-- Phone screen sizing with controls and image visible.
-- Visibility of cat/bin in the initial dark alley and after lifting shadows.
-- Curve control touch targets; histogram readability.
-- Quality and pacing of the first three explanations and checks.
-- Offline installation and browser cache behavior.
+## Evidence of testing
+- Node JavaScript syntax checks passed.
+- Canvas-backed Node integration tests passed for scene generation, reasonable edit completion, excessive highlight warning and Finnish language toggle.
+- Browser end-to-end/mobile screenshot not possible in this environment because navigation was blocked by browser administrator policy. **Real mobile test remains outstanding.**
 
-## Next, after user feedback
-- Improve diagnostics and spaced reviews; consider genuinely different question formats.
-- Improve render performance and accessibility on real phones.
-- Start additional scenes only after first three teach well.
-- Decide name with due diligence, only when needed.
+## Top issues to test
+1. Is the cat/bin discovery genuinely surprising on a phone in normal room lighting? If too obvious, darken while preserving recoverable contrast.
+2. Do the new forest shadows look like meaningful detail rather than arbitrary strokes?
+3. Does the sticky preview leave enough room for the curve on small phones?
+4. Does tone response remain responsive on old phones?
+5. Is the live feedback specific enough, without imposing one 'correct' artistic look?
+6. The two-point forest curve and scoring heuristics may need tuning.
+
+## Next planned work (not in 0.2)
+- Incorporate measured feedback from owner's phone and old phone.
+- Improve adaptive review/knowledge modeling: verify understanding before skipping basic concepts, no mindless repetition.
+- Test with a few volunteers, potentially family and a small Discord group when quality allows.
+- Plan optional Google Drive appDataFolder sync + multi-device conflict resolution after learning UX is validated. Closed-PWA background sync cannot be promised.
+- Commercial model and final international brand name intentionally postponed.
