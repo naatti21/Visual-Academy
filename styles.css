@@ -25,6 +25,7 @@
 .resume-note{color:#b2e7d3!important;font-size:12px!important;margin:5px 0 0!important}
 .resume-note:empty{display:none}
 
+
 /* v0.2.4: Optional visibility test uses fixed display gray values, never the image tone curve. */
 .visibility-reminder{margin:9px 0 4px!important;padding:9px 10px;background:#192c3d;border:1px solid #486477;border-radius:9px;
  display:flex;flex-wrap:wrap;align-items:center;gap:7px;color:#dceaf4;font-size:12px!important}
