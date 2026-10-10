@@ -28,3 +28,7 @@ A failed, cancelled, PR-only or superseded Quality gate cannot trigger publicati
 - If GitHub Pages rejects publishing, inspect the `Publish Visual Academy` workflow logs, the Pages source setting and the `github-pages` environment protection.
 
 The pipeline gate is not fully active until the **Pages source switch** and a successful Pages publish have both been verified.
+
+## 2026-10-10 owner confirmation and deployment smoke test
+
+The repository owner confirmed switching Settings > Pages > Source from branch deployment to **GitHub Actions**. This documentation-only commit is a smoke test: the expected sequence is `Quality gate` (success) then `Publish Visual Academy` (success), with **no new automatic `pages build and deployment` run** on this commit. Do not mark the Pages setting as verified until that run history has been inspected.
