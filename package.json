@@ -1,7 +1,7 @@
 {
   "name": "visual-academy-pwa",
   "private": true,
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Visual Academy learning app quality gate",
   "scripts": {
     "test": "npm run test:unit && npm run test:e2e",
