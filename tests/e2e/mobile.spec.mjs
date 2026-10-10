@@ -38,6 +38,7 @@ test('correct understanding is not erased by further experimentation', async ({p
   await page.locator('#answers .answer').nth(1).click();
   await expect(page.locator('#feedback')).toContainText('Pyydä');
   await page.locator('#reviewBtn').click();
+  await page.locator('#curve').focus();
   await page.keyboard.press('ArrowDown');
   await expect(page.locator('#feedback')).toContainText('Pyydä');
   await page.locator('#reviewBtn').click();
