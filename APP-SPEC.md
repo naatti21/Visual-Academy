@@ -44,7 +44,7 @@ Aluksi sama kuva muokataan usealla opitulla työkalulla Academyn sisällä (raja
 
 Työ keskeytyy helposti: harjoituksen versio/kuvavariantti, käyräpisteet, työkalutila, vastaukset, vinkit ja eteneminen tallennetaan paikallisesti. Keskeneräinen tehtävä avataan **samana** tehtävänä ja **samoilla** säädöillä. Jatkossa skeemattu IndexedDB sekä valinnainen käyttäjän oman Google Driven `appDataFolder`-varmuuskopiointi; selkeät konflikti- ja tuontisäännöt. Suljetun PWA:n jatkuvaa synkronointia ei luvata.
 
-## Nykyinen toteutustila 0.2.3 — *testikandidaatti*
+## Nykyinen toteutustila 0.2.4 — *testikandidaatti*
 
 - Kolme olemassa olevaa tehtävää, neljä sävysäätöpistettä metsän käyrässä (kaksi lukittua päätepistettä ja kaksi liikkuvaa).
 - Todelliseen kuvapikselien luminanssiin perustuva muunnos ja histogrammi; **ei** värinhallittu editori tai RAW-malli.
@@ -52,6 +52,9 @@ Työ keskeytyy helposti: harjoituksen versio/kuvavariantti, käyräpisteet, työ
 - Kahdesta säädettävästä pisteestä vain toista tarvitsee liikuttaa, kun se riittää tehtävään.
 - Harjoituskohtainen paikallinen luonnos palautuu harjoitukseen, sivun uudelleenavaukseen ja välilehtien vaihtoon. Tiedot on sidottu kolmeen nykyiseen harjoitukseen.
 - Vanha edistymisdata säilyy; varmuuskopioiden skeemat 2 ja 3 hyväksytään, uudet tiedostot ovat skeemaa 3.
+- Valinnainen näytön **varjosävyjen näkyvyystesti** on asetuksissa. Ensimmäisessä varjotehtävässä näkyvä pieni muistutus voidaan ohittaa; testin voi aina avata asetuksista. Kuusi kiinteää harmaasävyä eivät muutu käyräsäädöillä. Sovellus ei mittaa tai säädä näytön kirkkautta eikä väitä kalibroivansa näyttöä.
+- Muistutuksen ohitus ja testin suorittaminen tallennetaan erilliseen localStorage-avaimeen. Vastaus tai kirkkausprosentti ei tallennu eikä vaikuta osaamisarvioon, harjoituksen käyrään tai varmuuskopiointiin.
+- Näkyvyystesti on FI/EN-lokalisoitu ja testattu yksikkö- ja mobiili-E2E-tasolla; todellinen tummien sävyjen havaittavuus testataan vielä käyttäjälaitteilla.
 - Kaikkia tulevan oppimispolun ominaisuuksia, Kuvaklinikkaa, 3 liikkuvan pisteen harjoitusta, omaa kuvaa, RAWia tai pilvisynkronointia **ei ole vielä toteutettu**.
 
 ## Seuraava kehitysvaihe
@@ -61,6 +64,6 @@ Työ keskeytyy helposti: harjoituksen versio/kuvavariantti, käyräpisteet, työ
 3. Lisää ensimmäinen hallittu värillinen kuvavariantti ja 1–2 muuttuvaa kertauskuvaa.
 4. Rakenna pienin mahdollinen havaintoklinikka ilman raskasta editoria ja testaa oppimisarvo.
 5. Suunnittele pidempien keskeneräisten kuvaprojektien tallennus erikseen ennen toteutusta.
-6. Lisää repo-tason regressiotestit, mobiili-E2E ja Quality gate ennen varsinaista julkaisuporttia playbookin mukaan.
+6. Ylläpidä jo käytössä olevia regressiotestejä, mobiili-E2E:tä ja Quality gate → Pages -julkaisuporttia playbookin mukaan.
 
 **Vahvistettu tavoite:** käyttäjä ei opettele etsimään oikeaa pistettä tai vihreää merkkiä vaan tekemään omien kuvien muokkauspäätöksiä perustellusti.
