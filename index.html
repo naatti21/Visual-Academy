@@ -9,8 +9,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
-  <link rel="stylesheet" href="./styles.css?v=0.2.3">
-  <title>Visual Academy · Light Lab 0.2.3</title>
+  <link rel="stylesheet" href="./styles.css?v=0.2.4">
+  <title>Visual Academy · Light Lab 0.2.4</title>
 </head>
 <body>
   <main class="app">
@@ -29,7 +29,12 @@
     </nav>
     <div class="workspace">
       <section class="left-pane" aria-labelledby="lessonTitle">
-        <div class="lesson-brief"><p class="eyebrow" id="lessonKicker"></p><h3 id="lessonTitle"></h3><p id="lessonGoal"></p><p class="resume-note" id="resumeNote" role="status"></p></div>
+        <div class="lesson-brief"><p class="eyebrow" id="lessonKicker"></p><h3 id="lessonTitle"></h3><p id="lessonGoal"></p><p class="resume-note" id="resumeNote" role="status"></p>
+          <div id="visibilityReminder" class="visibility-reminder" hidden>
+            <span data-i18n="visibilityReminder">Are the darkest details visible on your screen?</span>
+            <button id="visibilityOpen" type="button" class="visibility-open" data-i18n="visibilityOpen">Check display</button>
+            <button id="visibilityDismiss" type="button" class="visibility-dismiss" data-i18n-aria="visibilityDismiss" aria-label="Dismiss reminder" title="Dismiss reminder">×</button>
+          </div></div>
         <div class="preview-sticky">
           <div class="preview-header"><span class="preview-title"><span class="live-dot"></span><span data-i18n="live">LIVE PIXEL PREVIEW</span></span><button id="compareBtn" type="button" class="compare-btn" data-i18n="hold">Hold for original</button></div>
           <div class="image-frame"><canvas id="scene" width="720" height="405" role="img" aria-label="Interactive tone-map illustration"></canvas><span id="originalBadge" class="original-badge" hidden data-i18n="original">ORIGINAL</span></div>
@@ -55,14 +60,37 @@
         <p class="footnote" data-i18n="footnote">An 8-bit pixel-based learning model, not a RAW editor. The histogram and feedback are calculated from the modified image, not staged animations.</p>
       </section>
     </div>
-    <footer class="site-footer"><span data-i18n="privacy">Local-first, no account. Progress stays on this device until exported.</span><span>v0.2.3 · TEST</span></footer>
+    <footer class="site-footer"><span data-i18n="privacy">Local-first, no account. Progress stays on this device until exported.</span><span>v0.2.4 · TEST</span></footer>
     <dialog id="settingsDialog" class="settings-modal" aria-labelledby="settingsHeading">
       <div class="settings-head"><h2 id="settingsHeading" data-i18n="settings">Settings</h2><button id="closeSettings" type="button" class="close-settings" aria-label="Close" data-i18n-aria="close">×</button></div>
       <p data-i18n="settingsDescription">Learning progress stays on this device. Save a backup file or restore one here.</p>
       <div class="settings-actions"><button id="exportBtn" type="button" class="secondary-btn" data-i18n="backup">Export backup</button><button id="importBtn" type="button" class="secondary-btn" data-i18n="restore">Import backup</button><input id="importInput" type="file" accept="application/json,.json" hidden></div>
       <p class="settings-note" data-i18n="offlineNote">Google Drive sync is not available in this prototype. Backups are manual.</p>
+      <details id="visibilityTest" class="visibility-test">
+        <summary data-i18n="visibilityHeading">Display shadow visibility</summary>
+        <div class="visibility-content">
+          <p data-i18n="visibilityIntro">Try this under normal viewing conditions. Adjust your phone brightness so neighboring dark gray patches can be distinguished. It is not a calibration or a brightness reading.</p>
+          <div class="visibility-strip" role="img" data-i18n-aria="visibilityStrip" aria-label="Six dark gray steps from barely visible to clearly visible, left to right">
+            <div class="visibility-patch" style="background-color:rgb(10,10,10)"></div>
+            <div class="visibility-patch" style="background-color:rgb(15,15,15)"></div>
+            <div class="visibility-patch" style="background-color:rgb(21,21,21)"></div>
+            <div class="visibility-patch" style="background-color:rgb(29,29,29)"></div>
+            <div class="visibility-patch" style="background-color:rgb(42,42,42)"></div>
+            <div class="visibility-patch" style="background-color:rgb(64,64,64)"></div>
+          </div>
+          <div class="visibility-scale" aria-hidden="true"><span data-i18n="visibilityDark">Darkest</span><span data-i18n="visibilityLight">Lightest</span></div>
+          <p class="visibility-question" data-i18n="visibilityQuestion">Can you distinguish the patches?</p>
+          <div id="visibilityChoices" class="visibility-choices" role="group" data-i18n-aria="visibilityQuestion">
+            <button type="button" data-visibility="all" data-i18n="visibilityAll" aria-pressed="false">All, including the darkest ones</button>
+            <button type="button" data-visibility="some" data-i18n="visibilitySome" aria-pressed="false">Only the lighter ones</button>
+            <button type="button" data-visibility="none" data-i18n="visibilityNone" aria-pressed="false">Only one or two</button>
+          </div>
+          <p id="visibilityResult" class="visibility-result" role="status" aria-live="polite" hidden></p>
+          <p class="visibility-note" data-i18n="visibilityNote">This check never changes the exercise image, your curve, or your learning score. Screen brightness varies between devices and environments.</p>
+        </div>
+      </details>
     </dialog>
   </main>
-  <script src="./app.js?v=0.2.3" defer></script>
+  <script src="./app.js?v=0.2.4" defer></script>
 </body>
 </html>

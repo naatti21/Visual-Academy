@@ -24,3 +24,26 @@
 .review-btn:focus-visible{outline:2px solid #d3fff5;outline-offset:2px}
 .resume-note{color:#b2e7d3!important;font-size:12px!important;margin:5px 0 0!important}
 .resume-note:empty{display:none}
+
+
+/* v0.2.4: Optional visibility test uses fixed display gray values, never the image tone curve. */
+.visibility-reminder{margin:9px 0 4px!important;padding:9px 10px;background:#192c3d;border:1px solid #486477;border-radius:9px;
+ display:flex;flex-wrap:wrap;align-items:center;gap:7px;color:#dceaf4;font-size:12px!important}
+.visibility-reminder[hidden]{display:none}
+.visibility-reminder span{flex:1 1 170px}
+.visibility-open{background:#275b64;border:1px solid #68a6ac;border-radius:7px;padding:6px 9px;font-size:12px;font-weight:700}
+.visibility-dismiss{background:transparent;border:0;padding:4px 8px;color:#d6e5f0;font-size:19px;line-height:1}
+.settings-modal{max-height:min(88dvh,750px);overflow-y:auto}
+.visibility-test{border-top:1px solid var(--line);margin-top:16px;padding-top:12px}
+.visibility-test summary{font-size:14px;font-weight:750;cursor:pointer;padding:7px 1px}
+.visibility-test summary:focus-visible{outline:2px solid var(--aqua);outline-offset:3px}
+.visibility-content>p{font-size:13px;line-height:1.45;color:#d8e8f0;margin:10px 0}
+.visibility-strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;background:#080808;padding:10px 6px;border-radius:8px}
+.visibility-patch{min-width:0;height:67px;border-radius:2px;box-shadow:none;filter:none;opacity:1}
+.visibility-scale{display:flex;justify-content:space-between;color:#c7d7e2;font-size:11px;margin-top:3px}
+.visibility-choices{display:grid;gap:7px}
+.visibility-choices button{text-align:left;background:#1c3046;border:1px solid #456075;border-radius:8px;padding:10px;font-size:13px;min-height:40px}
+.visibility-choices button[aria-pressed="true"]{border-color:var(--aqua);background:#23535a}
+.visibility-result{border:1px solid #5b7e87;border-radius:8px;background:#213a48;padding:10px;color:#e7f5fa!important}
+.visibility-result[hidden]{display:none}
+.visibility-content .visibility-note{font-size:11px;color:#bacbd7}
