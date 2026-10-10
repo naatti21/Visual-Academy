@@ -1,0 +1,53 @@
+import { test, expect } from '@playwright/test';
+
+test('optional visibility check preserves draft and scores across mobile reload', async ({page}) => {
+  await page.goto('/');
+  await page.locator('#langSelect').selectOption('fi');
+  await page.locator('#curve').focus();
+  const initialValue = await page.locator('#settingValue').innerText();
+  await page.keyboard.press('ArrowUp');
+  await expect(page.locator('#settingValue')).not.toHaveText(initialValue);
+  const curveValue = await page.locator('#settingValue').innerText();
+  await expect(page.locator('#visibilityReminder')).toBeVisible();
+  await page.locator('#visibilityOpen').click();
+  await expect(page.locator('#settingsDialog')).toBeVisible();
+  await expect(page.locator('#visibilityTest')).toHaveAttribute('open', '');
+  await page.locator('[data-visibility="some"]').click();
+  await expect(page.locator('#visibilityResult')).toContainText('Nosta näytön kirkkautta');
+  await expect(page.locator('[data-visibility="some"]')).toHaveAttribute('aria-pressed','true');
+  await page.locator('#closeSettings').click();
+  await expect(page.locator('#visibilityReminder')).toBeHidden();
+  await expect(page.locator('#settingValue')).toHaveText(curveValue);
+  await page.reload();
+  await expect(page.locator('#visibilityReminder')).toBeHidden();
+  await expect(page.locator('#settingValue')).toHaveText(curveValue);
+  const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('visual-academy-display-check-01')));
+  expect(prefs).toEqual({done:true,dismissed:false});
+  const progress = await page.evaluate(() => JSON.parse(localStorage.getItem('visual-academy-proto-02')));
+  expect(progress.drafts[0].edits).toBeGreaterThan(0);
+  expect(progress.complete[0]).toBe(false);
+  await page.locator('#settingsBtn').click();
+  await page.locator('#visibilityTest').locator('summary').click();
+  await expect(page.locator('.visibility-patch')).toHaveCount(6);
+  await expect(page.locator('.visibility-patch').first()).toHaveCSS('background-color','rgb(10, 10, 10)');
+  await expect(page.locator('.visibility-patch').last()).toHaveCSS('background-color','rgb(64, 64, 64)');
+});
+
+test('skipping visibility check never blocks learning; check remains in settings', async ({page}) => {
+  await page.goto('/');
+  await expect(page.locator('#visibilityReminder')).toBeVisible();
+  await page.locator('#visibilityDismiss').click();
+  await expect(page.locator('#visibilityReminder')).toBeHidden();
+  await page.reload();
+  await expect(page.locator('#visibilityReminder')).toBeHidden();
+  await page.locator('[data-lesson="2"]').click();
+  await expect(page.locator('#visibilityReminder')).toBeHidden();
+  await page.locator('#settingsBtn').click();
+  await page.locator('#visibilityTest').locator('summary').click();
+  await page.locator('[data-visibility="all"]').click();
+  await expect(page.locator('#visibilityResult')).toContainText('Good starting point');
+  const pref = await page.evaluate(() => JSON.parse(localStorage.getItem('visual-academy-display-check-01')));
+  expect(pref).toEqual({done:true,dismissed:true});
+  const data = await page.evaluate(() => JSON.parse(localStorage.getItem('visual-academy-proto-02')));
+  expect(data.complete).toEqual([false,false,false]);
+});
