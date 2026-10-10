@@ -46,8 +46,9 @@ test('correct understanding is not erased by further experimentation', async ({p
 });
 
 test('old progress is preserved and corrupt imports do not wipe local drafts', async ({page}) => {
-  await page.addInitScript(()=>localStorage.setItem('visual-academy-proto-02',JSON.stringify({lang:'fi',schema:2,lastLesson:2,complete:[true,false,false],best:[20,0,0],hint:[false,false,false]})));
   await page.goto('/');
+  await page.evaluate(()=>localStorage.setItem('visual-academy-proto-02',JSON.stringify({lang:'fi',schema:2,lastLesson:2,complete:[true,false,false],best:[20,0,0],hint:[false,false,false]})));
+  await page.reload();
   await expect(page.locator('#tick0')).toContainText('✓');
   await page.locator('#curve').focus();
   await page.keyboard.press('ArrowUp');
