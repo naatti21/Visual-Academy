@@ -1,0 +1,100 @@
+name: Publish Visual Academy
+
+# The repository Pages setting MUST use "GitHub Actions" as source.
+# Branch-source publishing bypasses this gate and must be disabled in Settings > Pages.
+on:
+  workflow_run:
+    workflows: ["Quality gate"]
+    types: [completed]
+
+permissions: {}
+
+concurrency:
+  group: visual-academy-pages
+  cancel-in-progress: true
+
+jobs:
+  package:
+    # Never deploy PRs, failed/cancelled tests, or another repository's workflow.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      tested_sha: ${{ steps.green.outputs.tested_sha }}
+    steps:
+      - name: Require current main to match the successful test run
+        id: green
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TESTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          MAIN_SHA="$(gh api "/repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$TESTED_SHA" != "$MAIN_SHA" ]]; then
+            echo "Superseded test run: ${TESTED_SHA} != current main ${MAIN_SHA}." >&2
+            exit 1
+          fi
+          echo "tested_sha=${TESTED_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout only the tested commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.green.outputs.tested_sha }}
+          persist-credentials: false
+
+      - name: Prepare static PWA files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site/icons
+          cp index.html app.js styles.css sw.js manifest.webmanifest site/
+          cp icons/icon-192.png icons/icon-512.png site/icons/
+          test -s site/index.html
+          test -s site/app.js
+          test -s site/sw.js
+          test -s site/manifest.webmanifest
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload tested site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: package
+    if: needs.package.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Require tested commit to remain current before publishing
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TESTED_SHA: ${{ needs.package.outputs.tested_sha }}
+        run: |
+          set -euo pipefail
+          MAIN_SHA="$(gh api "/repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$TESTED_SHA" != "$MAIN_SHA" ]]; then
+            echo "Main moved since packaging; refuse to deploy a superseded commit." >&2
+            exit 1
+          fi
+
+      - name: Publish to GitHub Pages
+        id: publish
+        uses: actions/deploy-pages@v4

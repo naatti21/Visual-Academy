@@ -54,8 +54,11 @@ test('old progress is preserved and corrupt imports do not wipe local drafts', a
   });
   await page.goto('/');
   await expect(page.locator('#tick0')).toContainText('✓');
+  const initialValue = await page.locator('#settingValue').innerText();
   await page.locator('#curve').focus();
   await page.keyboard.press('ArrowUp');
+  // Curve redraw is scheduled asynchronously. Capture the value after it actually changes.
+  await expect(page.locator('#settingValue')).not.toHaveText(initialValue);
   const v = await page.locator('#settingValue').innerText();
   await page.locator('#settingsBtn').click();
   await expect(page.locator('#settingsDialog')).toBeVisible();
