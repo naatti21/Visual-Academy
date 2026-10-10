@@ -1,0 +1,33 @@
+name: Quality gate
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    name: Unit and mobile E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+      - name: Upload failure screenshots and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-failure-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
