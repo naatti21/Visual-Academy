@@ -16,3 +16,11 @@
 .settings-actions{display:grid;gap:9px;margin-top:12px}
 .settings-actions button{padding:12px;text-align:center;touch-action:manipulation}
 @media(max-width:360px){.language-picker{padding:5px}.language-picker select{min-width:65px}.settings-button{width:36px;height:36px}}
+
+/* v0.2.3: Assessment is requested, never live-graded while dragging. */
+.mini-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.review-btn{flex:1;min-width:150px;min-height:41px;background:#275b64;color:#e7fffb;
+ border:1px solid #60aaa9;border-radius:9px;font-weight:750;padding:9px 12px}
+.review-btn:focus-visible{outline:2px solid #d3fff5;outline-offset:2px}
+.resume-note{color:#b2e7d3!important;font-size:12px!important;margin:5px 0 0!important}
+.resume-note:empty{display:none}

@@ -1,5 +1,5 @@
 'use strict';
-// Visual Academy 0.2.2 — tonal integrity validation and regression checks. No network calls.
+// Visual Academy 0.2.3 — deliberate review, flexible tonal tasks, persistent drafts. No network calls.
 const $ = id => document.getElementById(id);
 const W=720,H=405, STORAGE_KEY='visual-academy-proto-02', OLD_KEY='visual-academy-proto-01';
 const display=$('scene'),dc=display.getContext('2d',{willReadFrequently:true});
@@ -8,23 +8,74 @@ const sc=source.getContext('2d',{willReadFrequently:true});
 const hist=$('hist'),hc=hist.getContext('2d');
 const SVGNS='http://www.w3.org/2000/svg';
 const I18N={
- en:{prototype:'EXPERIMENTAL · V0.2.2',module:'MODULE 01 · LIGHT',lead:'Discover what your edits really do.',tab0:'Hidden details',tab1:'Histogram',tab2:'Forest tones',live:'LIVE PIXEL PREVIEW',hold:'Hold: original',original:'ORIGINAL',histogram:'LIVE HISTOGRAM',before:'Source',after:'Edited',dark:'Shadows',mid:'Midtones',bright:'Highlights',try:'YOUR EXPERIMENT',reset:'↺ Reset curve',hint:'✦ Hint',tapSwitch:'tap to switch',backup:'Export backup',restore:'Import backup',settings:'Settings',close:'Close',settingsDescription:'Your learning progress is saved on this device. Export a backup file or restore it here.',offlineNote:'Google Drive sync is not in this prototype yet. Backups are manual.',why:'Why does this happen?',check:'CHECK YOUR REASONING',continue:'Next lesson',footnote:'A simplified 8-bit luminance experiment. Source objects, clouds and textures are truly in the image pixels. Not a RAW or color-managed editor.',privacy:'Offline-first, no account. Progress is local; use export for a manual backup.',shadow:'Shadow point',middle:'Middle point',high:'Highlight point',axisY:'Output ↑',axisL:'Shadows',axisR:'Lights',metric:'Newly clipped highlights',notYet:'Try moving the glowing point first.',needBalance:'Your explanation is correct. Now refine the curve: the next lesson unlocks automatically when the image is balanced.',done:'✓ Completed. You can repeat it anytime.',finished:'All three lessons completed. Repeat them or try the next version when available.',hint0:'Look around the right side of the alley and the bin on the left. Raise shadows just enough to see their outlines. At maximum lift, detail and the night mood may disappear.',hint1:'Watch the gray and teal shapes. Dark pixel values sit at the left of the histogram. A histogram tells you how many pixels have a value, not which objects they form.',hint2:'Reveal tree trunks, bark and rock edges. Then test the smaller highlight dot: pushing it up too far merges distinct clouds into white.',wrong:'Not quite. Read the explanation and test the curve again.',
+ en:{prototype:'EXPERIMENTAL · V0.2.3',module:'MODULE 01 · LIGHT',lead:'Discover what your edits really do.',tab0:'Hidden details',tab1:'Histogram',tab2:'Forest tones',live:'LIVE PIXEL PREVIEW',hold:'Hold: original',original:'ORIGINAL',histogram:'LIVE HISTOGRAM',before:'Source',after:'Edited',dark:'Shadows',mid:'Midtones',bright:'Highlights',try:'YOUR EXPERIMENT',reset:'↺ Reset curve',hint:'✦ Hint',tapSwitch:'tap to switch',backup:'Export backup',restore:'Import backup',settings:'Settings',close:'Close',settingsDescription:'Your learning progress is saved on this device. Export a backup file or restore it here.',offlineNote:'Google Drive sync is not in this prototype yet. Backups are manual.',why:'Why does this happen?',check:'CHECK YOUR REASONING',continue:'Next lesson',footnote:'A simplified 8-bit luminance experiment. Source objects, clouds and textures are truly in the image pixels. Not a RAW or color-managed editor.',privacy:'Offline-first, no account. Progress is local; use export for a manual backup.',shadow:'Shadow point',middle:'Middle point',high:'Highlight point',axisY:'Output ↑',axisL:'Shadows',axisR:'Lights',metric:'Newly clipped highlights',duration:'YOUR PACE',review:'Assess my edit',reviewAgain:'Assess again',saved:'Saved on this device',resume:'Your previous workspace has been restored.',think:['Explore first','Look at the picture and the histogram. When you are ready, assess your edit. Several solutions can work.'],needReview:'Your explanation is correct. Assess your edit when you are ready to complete the lesson.',notYet:'Try moving the glowing point first.',needBalance:'Your explanation is correct. This edit does not yet meet the technical goal. Adjust the curve and request another assessment.',done:'✓ Completed. You can repeat it anytime.',finished:'All three lessons completed. Repeat them or try the next version when available.',hint0:'Look around the right side of the alley and the bin on the left. Raise shadows just enough to see their outlines. At maximum lift, detail and the night mood may disappear.',hint1:'Watch the gray and teal shapes. Dark pixel values sit at the left of the histogram. A histogram tells you how many pixels have a value, not which objects they form.',hint2:'Reveal tree trunks, bark and rock edges. Then test the smaller highlight dot: pushing it up too far merges distinct clouds into white.',wrong:'Not quite. Read the explanation and test the curve again.',
  scene0:{kicker:'01 · REVEAL',title:'What is hiding in the alley?',goal:'Find a black cat and a trash bin in the real shadow data. Keep the streetlight and nighttime mood under control.',instruction:'Drag the glowing SHADOW point up. Find both objects, then pull it back if the alley looks washed out.',theory:'A dark pixel is not necessarily black. Two nearly black pixels can hold different numerical values. A curve maps each old value to a new one. If a cat and its background have different values, their contrast can grow; if they are truly identical, no tone curve can separate them.',four:'Four questions: What is too dark? What details are stored? What must become clearer? What else becomes lighter?',question:'Why can the cat emerge from the darkness?',answers:['The curve recognizes a cat and adds new pixels.','Existing small tone differences become easier to distinguish.','The app secretly swaps in a brighter drawing.'],correct:1,good:'Exactly. The original pixels already contained those differences; the tone curve only remapped them.',bad:'A curve cannot recognize objects or invent detail missing from the source.'},
  scene1:{kicker:'02 · READ THE DATA',title:'What is the histogram telling you?',goal:'Notice how dark pixels move right when you brighten them. Pay attention to the bright streetlight too.',instruction:'Move the SHADOW point and compare the source bars (gray) with the edited bars (teal).',theory:'A histogram counts how many pixels fall into each tonal interval. It does not tell where those pixels are, and a dark scene is not automatically exposed incorrectly. Here the histogram is recomputed from the actually edited pixels.',four:'Four questions: Where are most pixel values? Which values are preserved? What shifts when shadows rise? Can a histogram judge artistic quality by itself?',question:'What does a big cluster on the left side mean?',answers:['There are many dark pixels.','The image must be incorrectly exposed.','The lightest parts of the picture contain many pixels.'],correct:0,good:'Correct. Left means dark; that alone does not say whether the picture is good or bad.',bad:'The histogram only counts brightness values: dark on the left, bright on the right.'},
- scene2:{kicker:'03 · PROTECT DETAILS',title:'Reveal the forest, keep the clouds',goal:'Show tree trunks and rock textures without washing out the clouds or mountain ridge.',instruction:'Lift the larger MIDDLE point. Tap the smaller HIGHLIGHT point to experiment with the sky — then protect its detail.',theory:'The horizontal axis is input brightness; the vertical axis is output brightness. Each curve point reshapes a range of tonal values. Lifting the middle can reveal dark structures. If high outputs collide at pure white, different cloud values merge and detail is irreversibly lost in that edited result. Undoing the edit restores the source.',four:'Four questions: What is hidden in the forest? Which pixel differences exist? What should emerge? How might the clouds and contrast change?',question:'Why should the bright end of the curve sometimes stay close to the diagonal?',answers:['It protects many highlight differences from being pushed together.','It only changes the trees because they are at the bottom.','The curve can reconstruct clipped cloud details on its own.'],correct:0,good:'Yes. Protecting upper tones preserves separations between clouds and the sky.',bad:'The curve affects tonal values, not specific objects. You can preserve highlights by keeping their mapping under control.'}},
- fi:{prototype:'KOKEILUVERSIO · V0.2.2',module:'MODUULI 01 · VALO',lead:'Selvitä, miksi kuva muuttuu.',tab0:'Piilotetut muodot',tab1:'Histogrammi',tab2:'Metsän sävyt',live:'PIKSELEISTÄ LASKETTU KUVA',hold:'Pidä: alkuperäinen',original:'ALKUPERÄINEN',histogram:'ELÄVÄ HISTOGRAMMI',before:'Ennen',after:'Jälkeen',dark:'Varjot',mid:'Keskisävyt',bright:'Valot',try:'OMA KOKEILU',reset:'↺ Nollaa käyrä',hint:'✦ Vihje',tapSwitch:'vaihda koskettamalla',backup:'Vie varmuuskopio',restore:'Palauta varmuuskopio',settings:'Asetukset',close:'Sulje',settingsDescription:'Oppimisen edistyminen tallentuu tälle laitteelle. Voit viedä tai palauttaa varmuuskopion täällä.',offlineNote:'Google Drive -synkronointia ei ole vielä tässä versiossa. Varmuuskopiointi on manuaalinen.',why:'Miksi näin tapahtuu?',check:'TARKISTA YMMÄRRYS',continue:'Seuraava harjoitus',footnote:'Yksinkertaistettu 8-bittinen luminanssimalli. Kissa, roskis, pilvet ja tekstuurit ovat aidosti lähtökuvan pikseleissä. Ei RAW- eikä värinhallittu editori.',privacy:'Toimii offline-tilassa ilman tiliä. Edistyminen tallentuu paikallisesti; voit viedä varmuuskopion.',shadow:'Varjopiste',middle:'Keskisävypiste',high:'Valopiste',axisY:'Ulostulo ↑',axisL:'Varjot',axisR:'Valot',metric:'Uutta valoleikkautumista',notYet:'Kokeile ensin siirtää hohtavaa pistettä.',needBalance:'Vastaus on oikein. Korjaa vielä käyrää: seuraava harjoitus avautuu automaattisesti, kun säätö on tasapainossa.',done:'✓ Valmis. Voit kerrata milloin vain.',finished:'Kolme harjoitusta tehty. Voit kerrata niitä tai odottaa seuraavaa versiota.',hint0:'Katso kujan oikealle puolelle ja vasemmalla olevaa roskista. Nosta varjoja sen verran, että reunat näkyvät. Ääripäässä yksityiskohdat ja yöfiilis kärsivät.',hint1:'Seuraa harmaata ja turkoosia jakaumaa. Tummat pikselit ovat vasemmalla. Histogrammi kertoo sävyarvojen määrän, ei esineiden sijaintia.',hint2:'Etsi puunrunkoja ja kallion yksityiskohtia. Kokeile sitten pientä valopistettä: liiallinen nosto yhdistää pilvien sävyt valkoiseksi.',wrong:'Ei aivan. Lue selitys ja tutki käyrää uudelleen.',
+ scene2:{kicker:'03 · PROTECT DETAILS',title:'Reveal the forest, keep the clouds',goal:'Show tree trunks and rock textures without washing out the clouds or mountain ridge.',instruction:'Lift the MIDDLE point and study the forest. You MAY adjust the HIGHLIGHT point to protect or explore the sky; moving both is not required.',theory:'The horizontal axis is original brightness and the vertical axis is the new value. A steeper rising curve increases local tone separation; a nearly horizontal segment merges differences; a downward segment reverses tone order. Lifting midtones can reveal the forest, but protect cloud differences from merging into white. Undo restores the source.',four:'Four questions: What is hidden in the forest? Which pixel differences exist? What should emerge? How might the clouds and contrast change?',question:'Why should the bright end of the curve sometimes stay close to the diagonal?',answers:['It protects many highlight differences from being pushed together.','It only changes the trees because they are at the bottom.','The curve can reconstruct clipped cloud details on its own.'],correct:0,good:'Yes. Protecting upper tones preserves separations between clouds and the sky.',bad:'The curve affects tonal values, not specific objects. You can preserve highlights by keeping their mapping under control.'}},
+ fi:{prototype:'KOKEILUVERSIO · V0.2.3',module:'MODUULI 01 · VALO',lead:'Selvitä, miksi kuva muuttuu.',tab0:'Piilotetut muodot',tab1:'Histogrammi',tab2:'Metsän sävyt',live:'PIKSELEISTÄ LASKETTU KUVA',hold:'Pidä: alkuperäinen',original:'ALKUPERÄINEN',histogram:'ELÄVÄ HISTOGRAMMI',before:'Ennen',after:'Jälkeen',dark:'Varjot',mid:'Keskisävyt',bright:'Valot',try:'OMA KOKEILU',reset:'↺ Nollaa käyrä',hint:'✦ Vihje',tapSwitch:'vaihda koskettamalla',backup:'Vie varmuuskopio',restore:'Palauta varmuuskopio',settings:'Asetukset',close:'Sulje',settingsDescription:'Oppimisen edistyminen tallentuu tälle laitteelle. Voit viedä tai palauttaa varmuuskopion täällä.',offlineNote:'Google Drive -synkronointia ei ole vielä tässä versiossa. Varmuuskopiointi on manuaalinen.',why:'Miksi näin tapahtuu?',check:'TARKISTA YMMÄRRYS',continue:'Seuraava harjoitus',footnote:'Yksinkertaistettu 8-bittinen luminanssimalli. Kissa, roskis, pilvet ja tekstuurit ovat aidosti lähtökuvan pikseleissä. Ei RAW- eikä värinhallittu editori.',privacy:'Toimii offline-tilassa ilman tiliä. Edistyminen tallentuu paikallisesti; voit viedä varmuuskopion.',shadow:'Varjopiste',middle:'Keskisävypiste',high:'Valopiste',axisY:'Ulostulo ↑',axisL:'Varjot',axisR:'Valot',metric:'Uutta valoleikkautumista',duration:'OMAAN TAHTIIN',review:'Arvioi muokkaukseni',reviewAgain:'Arvioi uudelleen',saved:'Tallennettu laitteelle',resume:'Edellinen työtilanne palautettu.',think:['Tutki ensin kuvaa','Katso kuvaa ja histogrammia. Pyydä arvio vasta, kun olet valmis. Useampi ratkaisu voi toimia.'],needReview:'Vastaus on oikein. Pyydä muokkauksesi arvio, kun olet valmis.',notYet:'Kokeile ensin siirtää hohtavaa pistettä.',needBalance:'Vastaus on oikein. Muokkaus ei vielä vastaa tehtävän teknistä tavoitetta. Säädä käyrää ja pyydä uusi arvio.',done:'✓ Valmis. Voit kerrata milloin vain.',finished:'Kolme harjoitusta tehty. Voit kerrata niitä tai odottaa seuraavaa versiota.',hint0:'Katso kujan oikealle puolelle ja vasemmalla olevaa roskista. Nosta varjoja sen verran, että reunat näkyvät. Ääripäässä yksityiskohdat ja yöfiilis kärsivät.',hint1:'Seuraa harmaata ja turkoosia jakaumaa. Tummat pikselit ovat vasemmalla. Histogrammi kertoo sävyarvojen määrän, ei esineiden sijaintia.',hint2:'Etsi puunrunkoja ja kallion yksityiskohtia. Kokeile sitten pientä valopistettä: liiallinen nosto yhdistää pilvien sävyt valkoiseksi.',wrong:'Ei aivan. Lue selitys ja tutki käyrää uudelleen.',
  scene0:{kicker:'01 · PALJASTA',title:'Mitä pimeässä kujassa on?',goal:'Löydä musta kissa ja roskis lähtökuvan varjoista. Yritä säilyttää katuvalo ja yöfiilis.',instruction:'Vedä hohtavaa VARJOpistettä ylöspäin. Etsi molemmat kohteet ja peruuta, jos kuja alkaa näyttää haalealta.',theory:'Tumma pikseli ei ole välttämättä täysin musta. Kahdessa lähes mustassa pikselissä voi olla eri lukuarvot. Käyrä muuntaa arvot toisiksi. Jos kissalla ja taustalla on eri arvot, niiden ero voi tulla näkyvämmäksi. Täsmälleen samaan arvoon kadonneita yksityiskohtia ei käyrä palauta.',four:'Neljä kysymystä: Mikä on liian tummaa? Mitä on tallessa? Mitä halutaan nähdä? Mitä muuta kirkastuu?',question:'Miksi kissa voi tulla näkyviin?',answers:['Käyrä tunnistaa kissan ja luo pikseleitä.','Kuvassa olleet pienet sävyerot tulevat helpommin nähtäviksi.','Sovellus vaihtaa salaa kuvan kirkkaampaan piirrokseen.'],correct:1,good:'Oikein. Erot olivat jo lähtökuvan pikseleissä; käyrä vain muutti niitä.',bad:'Käyrä ei tunnista kohteita eikä keksi kuvaan puuttuvaa yksityiskohtaa.'},
  scene1:{kicker:'02 · LUE TIETOA',title:'Mitä histogrammi kertoo?',goal:'Huomaa, miten tummat pikselit siirtyvät oikealle kirkastettaessa. Tarkkaile myös katuvaloa.',instruction:'Liikuta VARJOpistettä ja vertaa lähtökuvaa (harmaa) muokattuun (turkoosi).',theory:'Histogrammi kertoo, kuinka monta pikseliä on kullakin sävyalueella. Se ei kerro, missä pikselit sijaitsevat, eikä tumma kuva automaattisesti ole huono. Tässä jakauma lasketaan uudelleen oikeasti käsitellyistä pikseleistä.',four:'Neljä kysymystä: Missä sävyt ovat? Mitä on tallessa? Mitkä arvot siirtyvät? Voiko histogrammi yksin päättää, onko kuva hyvä?',question:'Mitä suuri kasa histogrammin vasemmassa laidassa tarkoittaa?',answers:['Kuvassa on paljon tummia pikseleitä.','Kuva on varmasti valotettu väärin.','Kuvassa on paljon kirkkaimpia pikseleitä.'],correct:0,good:'Kyllä. Vasemmalla on tummaa, mutta se ei yksin tarkoita huonoa kuvaa.',bad:'Histogrammi laskee vain kirkkausjakaumaa: vasemmalla tumma, oikealla vaalea.'},
- scene2:{kicker:'03 · SÄILYTÄ',title:'Avaa metsää, säästä pilvet',goal:'Tuo puunrungot ja kallion tekstuuri esiin niin, etteivät pilvet tai vuorenhuiput katoa.',instruction:'Nosta suurta KESKIsävypistettä. Kosketa pientä VALOpistettä kokeillaksesi taivasta — ja suojaa sitten yksityiskohdat.',theory:'Käyrän vaaka-akseli näyttää alkuperäisen kirkkauden, pysty-akseli uuden kirkkauden. Piste muuttaa useita sävyjä ympärillään. Keskialueen nostaminen voi paljastaa tummia rakenteita. Jos kirkkaat arvot pakkautuvat samaan valkoiseen, pilvien eri sävyt katoavat muokatusta tuloksesta. Alkuperäiseen palauttaminen tuo lähtötiedon takaisin.',four:'Neljä kysymystä: Mitä metsässä piilee? Mitkä sävyerot ovat tallessa? Mitä nostetaan? Mitä tapahtuu pilville ja kontrastille?',question:'Miksi käyrän valopään kannattaa joskus pysyä lähellä diagonaalia?',answers:['Se auttaa säilyttämään kirkkaiden kohtien sävyeroja.','Se muuttaa vain puita, koska ne ovat alhaalla.','Käyrä pystyy luomaan puhkipalaneet pilvet takaisin.'],correct:0,good:'Oikein. Valopään hallinta auttaa säilyttämään pilvien eri sävyt.',bad:'Käyrä muuttaa sävyjä eikä tunnista erillisiä esineitä. Valojen eroja voi suojella niiden säätöä hallitsemalla.'}}
+ scene2:{kicker:'03 · SÄILYTÄ',title:'Avaa metsää, säästä pilvet',goal:'Tuo puunrungot ja kallion tekstuuri esiin niin, etteivät pilvet tai vuorenhuiput katoa.',instruction:'Nosta KESKIsävypistettä ja katso metsää. Halutessasi voit säätää myös VALOpistettä taivaan tutkimiseen tai suojaamiseen. Molempia ei tarvitse liikuttaa.',theory:'Vaaka-akseli kuvaa alkuperäistä kirkkautta ja pysty-akseli uutta arvoa. Jyrkkä nouseva käyrä erottaa läheisiä sävyjä toisistaan, lähes vaakasuora osuus puristaa niitä yhteen ja laskeva osuus kääntää sävyjärjestyksen. Keskisävyjen nosto voi avata metsää. Pilvien sävyt voivat kadota, jos valoalue pakkautuu valkoiseksi. Kumoa muutos, niin lähtötieto on taas käytettävissä.',four:'Neljä kysymystä: Mitä metsässä piilee? Mitkä sävyerot ovat tallessa? Mitä nostetaan? Mitä tapahtuu pilville ja kontrastille?',question:'Miksi käyrän valopään kannattaa joskus pysyä lähellä diagonaalia?',answers:['Se auttaa säilyttämään kirkkaiden kohtien sävyeroja.','Se muuttaa vain puita, koska ne ovat alhaalla.','Käyrä pystyy luomaan puhkipalaneet pilvet takaisin.'],correct:0,good:'Oikein. Valopään hallinta auttaa säilyttämään pilvien eri sävyt.',bad:'Käyrä muuttaa sävyjä eikä tunnista erillisiä esineitä. Valojen eroja voi suojella niiden säätöä hallitsemalla.'}}
 };
-let lang='en',lesson=0,lastLesson=0,selected=null,activePoint=0,showOriginal=false,sourceImg=null,editedImg=null,baseBins=null,interactionCount=0,dragPointer=null,lastStatus='idle';
+let lang='en',lesson=0,lastLesson=0,selected=null,activePoint=0,showOriginal=false,sourceImg=null,editedImg=null,baseBins=null,interactionCount=0,dragPointer=null,dragStart=null,lastStatus='idle';
 const progress={complete:[false,false,false],best:[0,0,0],hint:[false,false,false]};
+const drafts=[null,null,null]; // One independent unfinished edit per lesson.
+let reviewed=false, saveTimer=null, restoredDraft=false;
 // Luminance and channel adjustments: modeled in 8-bit luma, preserving original chroma approximately.
 const luminance=(r,g,b)=>.2126*r+.7152*g+.0722*b;
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
-function readStorage(){try{const now=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');const old=JSON.parse(localStorage.getItem(OLD_KEY)||'null');if(now){lang=now.lang==='fi'?'fi':'en'; for(let i=0;i<3;i++){progress.complete[i]=!!now.complete?.[i];progress.best[i]=Number(now.best?.[i]||0);progress.hint[i]=!!now.hint?.[i];}lastLesson=clamp(Number(now.lastLesson||0),0,2); }else if(old){lang=old.lang==='fi'?'fi':'en';for(let i=0;i<3;i++)progress.complete[i]=!!old.done?.[i];}}catch(e){/* localStorage may be unavailable. */}}
-function saveStorage(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({schema:2,lang,lastLesson:lesson,...progress,lastSaved:new Date().toISOString()}));}catch(e){}}
-function exportProgress(){const payload=JSON.stringify({app:'visual-academy',schema:2,lang,...progress,exportedAt:new Date().toISOString()},null,2);const blob=new Blob([payload],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='visual-academy-progress.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500);}
+// Drafts are small JSON records; the source drawings are deterministic and never stored as images.
+function validDraft(input,i){
+  if(!input || !Array.isArray(input.y) || input.y.length!== (i===2?2:1))return null;
+  if(!input.y.every(v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=255))return null;
+  return {y:input.y,active:input.active===2&&i===2?2:1,
+    edits:Number.isSafeInteger(input.edits)?clamp(input.edits,0,1000000):0,
+    answer:Number.isInteger(input.answer)&&input.answer>=0&&input.answer<=2?input.answer:null,
+    hint:input.hint===true, reviewed:input.reviewed===true};
+}
+function readStorage(){
+  try{
+    const now=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+    const old=JSON.parse(localStorage.getItem(OLD_KEY)||'null');
+    if(now){
+      lang=now.lang==='fi'?'fi':'en';
+      for(let i=0;i<3;i++){
+        progress.complete[i]=now.complete?.[i]===true;
+        progress.best[i]=clamp(Number(now.best?.[i])||0,0,255);
+        progress.hint[i]=now.hint?.[i]===true;
+        drafts[i]=validDraft(now.drafts?.[i],i);
+      }
+      lastLesson=clamp(Number(now.lastLesson)||0,0,2);
+    }else if(old){
+      lang=old.lang==='fi'?'fi':'en';
+      for(let i=0;i<3;i++)progress.complete[i]=old.done?.[i]===true;
+    }
+  }catch(e){/* Corrupted or disabled storage must not stop learning. */}
+}
+function captureDraft(){
+  drafts[lesson]={y:pts.filter(p=>!p.locked).map(p=>Math.round(p.y*100)/100),
+    active:activePoint,edits:interactionCount,answer:selectedAnswer,
+    hint:hintShown,reviewed};
+}
+function writeStorage(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({schema:3,lang,lastLesson:lesson,
+    ...progress,drafts,lastSaved:new Date().toISOString()}));}catch(e){/* Quota or disabled storage. */}
+}
+function saveStorage(){clearTimeout(saveTimer);saveTimer=null;captureDraft();writeStorage();}
+function queueSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveStorage,220);
+}
+function exportProgress(){
+  saveStorage();
+  const payload=JSON.stringify({app:'visual-academy',schema:3,lang,
+    ...progress,drafts,lastLesson:lesson,exportedAt:new Date().toISOString()},null,2);
+  const blob=new Blob([payload],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='visual-academy-progress.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2500);
+}
 const T=()=>I18N[lang];
 function rng(seed){return ()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
 function poly(c,pts,color){c.fillStyle=color;c.beginPath();c.moveTo(pts[0][0],pts[0][1]);for(const p of pts.slice(1))c.lineTo(p[0],p[1]);c.closePath();c.fill();}
@@ -142,24 +193,50 @@ let pending=false;function requestRender(){if(pending)return;pending=true;reques
 // Coach decision uses the observed edited pixels, not simply the control value.
 function evaluate(){
   const s=currentStats;
-  const tooSubtle=s.lift<(lesson===2?8:11),washed=s.lift>(lesson===2?62:50);
+  const tooSubtle=s.lift<(lesson===2?5:7),washed=s.lift>(lesson===2?88:70);
   if(interactionCount===0)return {kind:'idle',pass:false,code:'idle'};
-  if(s.reversals>0)return {kind:'warn',pass:false,code:'reversed'};
-  if(s.longestFlat>26)return {kind:'warn',pass:false,code:'flat'};
-  if(s.newBlack>0.10)return {kind:'warn',pass:false,code:'black'};
-  if(s.newClipped>0.10)return {kind:'warn',pass:false,code:'clip'};
-  if(lesson===2&&(s.skyShift>27||s.skyContrast<0.62))return {kind:'warn',pass:false,code:'sky'};
+  if(s.reversals>4)return {kind:'warn',pass:false,code:'reversed'};
+  if(s.longestFlat>44)return {kind:'warn',pass:false,code:'flat'};
+  if(s.newBlack>0.45)return {kind:'warn',pass:false,code:'black'};
+  if(s.newClipped>0.45)return {kind:'warn',pass:false,code:'clip'};
+  if(lesson===2&&s.skyContrast<0.43)return {kind:'warn',pass:false,code:'sky'};
   if(washed)return {kind:'warn',pass:false,code:'washed'};
   if(tooSubtle)return {kind:'idle',pass:false,code:'subtle'};
   return {kind:'good',pass:true,code:'balanced'};
 }
 const COACH={en:{idle:['Try a small move','The source is deliberately dark. Explore the curve and watch both the picture and the measured histogram.'],subtle:['Details are still subtle','Raise the relevant tones a little more. The objects and textures are already in the source pixels.'],balanced:['A promising balance','More shadow information is visible while highlight clipping stays under control. Compare with the original and decide whether you like the mood.'],washed:['The picture is losing its mood','The dark tones have been lifted very strongly. Even if you can identify objects, the night / depth can feel flat. Bring the curve back a little.'],reversed:['The curve reverses tonal order','Part of the curve slopes downward: originally brighter pixels can become darker than their neighbors. Explore this creatively if you like, but it does not preserve detail for this lesson.'],flat:['Different tones are merging','A large stretch of the curve is almost horizontal. Details can merge even without becoming pure white or black. Give this tonal range more separation.'],black:['Dark details are being crushed','Some tones that were different in the source now collapse toward black. Raise the lowered part of the curve and compare the image again.'],sky:['Sky detail is changing too much','The clouds and mountain tones have lost much of their original separation or brightness. Try keeping the highlight part closer to the diagonal.'],clip:['Highlight information is merging','The edit has pushed previously distinct tones into nearly white. Check the streetlight or clouds; move the upper part of the curve down.'],metrics:(s)=>`Shadow lift: +${Math.round(s.lift)}/255 · To white: ${s.newClipped.toFixed(2)}% · To black: ${s.newBlack.toFixed(2)}%${s.reversals>0?' · Curve reverses':''}`},fi:{idle:['Kokeile pientä muutosta','Lähtökuva on tarkoituksella tumma. Tutki käyrää ja seuraa sekä kuvaa että oikeista pikseleistä laskettua histogrammia.'],subtle:['Yksityiskohdat erottuvat vielä heikosti','Nosta haluttuja sävyjä hieman lisää. Kohteet ja tekstuurit ovat jo lähtökuvan pikseleissä.'],balanced:['Lupaava tasapaino','Varjoista erottuu enemmän tietoa ilman merkittävää uutta valoleikkautumista. Vertaa alkuperäiseen ja arvioi tunnelmaa itse.'],washed:['Tunnelma alkaa latistua','Tummia sävyjä on nostettu voimakkaasti. Kohteet ehkä erottuvat, mutta yökuvan syvyys kärsii. Peruuta vähän.'],reversed:['Käyrä kääntää sävyjärjestyksen','Osa käyrästä laskee alaspäin: alun perin vaaleampi sävy voi muuttua viereistä sävyä tummemmaksi. Kokeilu on sallittu, mutta se ei säilytä yksityiskohtia tämän tehtävän tavoitteella.'],flat:['Sävyerot puristuvat yhteen','Käyrä kulkee pitkän matkan lähes vaakasuoraan. Yksityiskohdat voivat sulautua yhteen ilman mustaan tai valkoiseen leikkautumista. Anna tälle sävyalueelle enemmän eroa.'],black:['Tummat yksityiskohdat tukkeutuvat','Aiemmin eri sävyisiä kohtia sulautuu lähes mustaksi. Nosta käyrän alas painettua aluetta ja vertaa kuvaa uudelleen.'],sky:['Taivaan yksityiskohtia katoaa','Pilvien ja vuoren sävyerot tai kirkkaus muuttuvat liian voimakkaasti. Kokeile pitää käyrän valoalue lähempänä katkoviivaa.'],clip:['Vaaleiden kohtien sävyt sulautuvat','Muokkaus on vienyt aiemmin erillisiä sävyjä lähes valkoisiksi. Katso katuvaloa tai pilviä; laske käyrän valoaluetta.'],metrics:(s)=>`Varjojen nousu: +${Math.round(s.lift)}/255 · Valkoiseen: ${s.newClipped.toFixed(2)} % · Mustaan: ${s.newBlack.toFixed(2)} %${s.reversals>0?' · Käyrä kääntyy':''}`}};
-function showCoaching(){const ev=evaluate(),co=COACH[lang],c=$('coach');c.className='coach'+(ev.kind==='warn'?' warn':ev.kind==='good'?' good':'');$('coachTitle').textContent=co[ev.code][0];$('coachBody').textContent=co[ev.code][1];$('metricLine').textContent=co.metrics(currentStats);lastStatus=ev.code;updateCompletion();}
+function showCoaching(){
+  const c=$('coach');
+  if(!reviewed){
+    c.className='coach';
+    $('coachTitle').textContent=T().think[0];
+    $('coachBody').textContent=T().think[1];
+    $('metricLine').textContent='';
+    $('reviewBtn').textContent=T().review;
+  }else{
+    const ev=evaluate(),co=COACH[lang];
+    c.className='coach'+(ev.kind==='warn'?' warn':ev.kind==='good'?' good':'');
+    $('coachTitle').textContent=co[ev.code][0];
+    $('coachBody').textContent=co[ev.code][1];
+    $('metricLine').textContent=co.metrics(currentStats);
+    $('reviewBtn').textContent=T().reviewAgain;
+  }
+  updateCompletion();
+}
 let answeredCorrect=false,selectedAnswer=null,hintShown=false;
 function updateCompletion(){
+  const f=$('feedback');
+  if(!answeredCorrect){
+    $('nextBtn').disabled=!progress.complete[lesson];
+    return;
+  }
+  if(!reviewed){
+    f.hidden=false;f.className='feedback';f.textContent=T().needReview;
+    $('nextBtn').disabled=!progress.complete[lesson];
+    return;
+  }
   const ev=evaluate();
-  if(!answeredCorrect){$('nextBtn').disabled=!progress.complete[lesson];return;}
-  const f=$('feedback');f.hidden=false;
+  f.hidden=false;
   if(ev.pass){
     const newlyCompleted=!progress.complete[lesson];
     progress.complete[lesson]=true;
@@ -172,36 +249,90 @@ function updateCompletion(){
     f.className='feedback';
     f.textContent=(progress.complete[lesson]?T().done+' ':T()['scene'+lesson].good+' ')+T().needBalance;
   }
-  // A successfully demonstrated skill remains unlocked. Further experimentation is welcome.
   $('nextBtn').disabled=!progress.complete[lesson];
 }
-function answer(i){selectedAnswer=i;answeredCorrect=i===T()['scene'+lesson].correct;const ans=Array.from($('answers').children);ans.forEach((b,j)=>b.classList.toggle('selected',i===j));$('feedback').hidden=false;if(!answeredCorrect){$('feedback').className='feedback bad';$('feedback').textContent=T()['scene'+lesson].bad;}else updateCompletion();}
+function answer(i){
+  selectedAnswer=i;answeredCorrect=i===T()['scene'+lesson].correct;
+  const ans=Array.from($('answers').children);
+  ans.forEach((b,j)=>b.classList.toggle('selected',i===j));
+  $('feedback').hidden=false;
+  if(!answeredCorrect){
+    $('feedback').className='feedback bad';
+    $('feedback').textContent=T()['scene'+lesson].bad;
+  }else updateCompletion();
+  saveStorage();
+}
+function assessEdit(){reviewed=true;render();saveStorage();}
+function onCurveChanged(){reviewed=false;$('feedback').hidden=!answeredCorrect;queueSave();requestRender();}
 function refreshTabs(){document.querySelectorAll('[data-lesson]').forEach((b,i)=>{b.classList.toggle('active',i===lesson);b.setAttribute('aria-current',i===lesson?'step':'false');$('tick'+i).textContent=progress.complete[i]?'✓':'';});}
-function texts(){document.documentElement.lang=lang;document.querySelectorAll('[data-i18n]').forEach(el=>{const val=T()[el.dataset.i18n];if(val!==undefined)el.textContent=val;});$('langSelect').value=lang;document.querySelectorAll('[data-i18n-aria]').forEach(el=>{const value=T()[el.dataset.i18nAria];if(value)el.setAttribute('aria-label',value);});$('settingsBtn').title=T().settings;const l=T()['scene'+lesson];$('lessonKicker').textContent=l.kicker;$('lessonTitle').textContent=l.title;$('lessonGoal').textContent=l.goal;$('instructionText').textContent=l.instruction;$('theoryBody').textContent=(hintShown?T()['hint'+lesson]+' ': '')+l.theory;$('fourQuestions').textContent=l.four;$('questionHeading').textContent=l.question;$('answers').replaceChildren();l.answers.forEach((ans,i)=>{const b=document.createElement('button');b.className='answer'+(i===selectedAnswer?' selected':'');b.type='button';b.textContent=`${'ABC'[i]}. ${ans}`;b.addEventListener('click',()=>answer(i));$('answers').appendChild(b);});$('axisLeft').textContent=T().axisL;$('axisRight').textContent=T().axisR;$('axisY').textContent=T().axisY;$('nextLabel').textContent=lesson===2?T().finished:T().continue;requestRender();}
-function changeLesson(i){lesson=i;pts=pointSet();activePoint=1;interactionCount=0;answeredCorrect=false;selectedAnswer=null;hintShown=false;showOriginal=false;$('originalBadge').hidden=true;$('theory').open=false;$('feedback').hidden=true;$('nextBtn').disabled=!progress.complete[i];buildSource();refreshTabs();texts();saveStorage();}
+function texts(){document.documentElement.lang=lang;document.querySelectorAll('[data-i18n]').forEach(el=>{const val=T()[el.dataset.i18n];if(val!==undefined)el.textContent=val;});$('langSelect').value=lang;document.querySelectorAll('[data-i18n-aria]').forEach(el=>{const value=T()[el.dataset.i18nAria];if(value)el.setAttribute('aria-label',value);});$('settingsBtn').title=T().settings;const l=T()['scene'+lesson];$('lessonKicker').textContent=l.kicker;$('lessonTitle').textContent=l.title;$('lessonGoal').textContent=l.goal;$('instructionText').textContent=l.instruction;$('theoryBody').textContent=(hintShown?T()['hint'+lesson]+' ': '')+l.theory;$('fourQuestions').textContent=l.four;$('questionHeading').textContent=l.question;$('answers').replaceChildren();l.answers.forEach((ans,i)=>{const b=document.createElement('button');b.className='answer'+(i===selectedAnswer?' selected':'');b.type='button';b.textContent=`${'ABC'[i]}. ${ans}`;b.addEventListener('click',()=>answer(i));$('answers').appendChild(b);});$('axisLeft').textContent=T().axisL;$('axisRight').textContent=T().axisR;$('axisY').textContent=T().axisY;$('nextLabel').textContent=lesson===2?T().finished:T().continue;$('resumeNote').textContent=restoredDraft?T().resume:'';requestRender();}
+function changeLesson(i,{reset=false,initial=false}={}){
+  if(!initial)saveStorage();
+  lesson=i;
+  if(reset)drafts[i]=null;
+  pts=pointSet();activePoint=1;interactionCount=0;
+  answeredCorrect=false;selectedAnswer=null;hintShown=false;reviewed=false;
+  restoredDraft=false;showOriginal=false;
+  const draft=validDraft(drafts[i],i);
+  if(draft){
+    pts.filter(p=>!p.locked).forEach((p,j)=>p.y=draft.y[j]);
+    activePoint=draft.active;interactionCount=draft.edits;
+    selectedAnswer=draft.answer;
+    answeredCorrect=selectedAnswer===T()['scene'+i].correct;
+    hintShown=draft.hint;reviewed=draft.reviewed;
+    restoredDraft=draft.edits>0;
+  }
+  $('originalBadge').hidden=true;$('theory').open=false;
+  $('feedback').hidden=true;$('nextBtn').disabled=!progress.complete[i];
+  buildSource();refreshTabs();texts();
+  $('resumeNote').textContent=restoredDraft?T().resume:'';
+  saveStorage();
+}
 function selectPoint(e){const bbox=$('curve').getBoundingClientRect(),cx=(e.clientX-bbox.left)/bbox.width*360,cy=(e.clientY-bbox.top)/bbox.height*213;let dist=Infinity,target=activePoint;pts.forEach((p,i)=>{if(p.locked)return;let px=36+p.x/255*292,py=183-p.y/255*173;const d=Math.hypot(px-cx,py-cy);if(d<dist){dist=d;target=i;}});if(dist<33)activePoint=target;}
-function dragCurve(e){const bbox=$('curve').getBoundingClientRect(),sy=(e.clientY-bbox.top)/bbox.height*213;let val=(183-sy)/173*255;pts[activePoint].y=clamp(val,0,255);interactionCount++;requestRender();}
+function dragCurve(e){const bbox=$('curve').getBoundingClientRect(),sy=(e.clientY-bbox.top)/bbox.height*213;let val=(183-sy)/173*255;pts[activePoint].y=clamp(val,0,255);interactionCount++;onCurveChanged();}
 function setLang(l){lang=l;texts();saveStorage();}
-$('curve').addEventListener('pointerdown',e=>{dragPointer=e.pointerId;selectPoint(e);$('curve').setPointerCapture(e.pointerId);dragCurve(e);e.preventDefault();});
-$('curve').addEventListener('pointermove',e=>{if(e.pointerId===dragPointer){dragCurve(e);e.preventDefault();}});
-for(const typ of ['pointercancel','pointerup','lostpointercapture'])$('curve').addEventListener(typ,()=>{dragPointer=null;});
-$('curve').addEventListener('keydown',e=>{if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();if(e.key==='ArrowLeft'||e.key==='ArrowRight') {if(lesson===2) activePoint=activePoint===1?2:1;}else{pts[activePoint].y=clamp(pts[activePoint].y+(e.key==='ArrowUp'?3:-3),0,255);interactionCount++;}requestRender();});
+$('curve').addEventListener('pointerdown',e=>{dragPointer=e.pointerId;dragStart={x:e.clientX,y:e.clientY};selectPoint(e);$('curve').setPointerCapture(e.pointerId);requestRender();e.preventDefault();});
+$('curve').addEventListener('pointermove',e=>{if(e.pointerId===dragPointer&&dragStart&&Math.hypot(e.clientX-dragStart.x,e.clientY-dragStart.y)>4){dragCurve(e);e.preventDefault();}});
+for(const typ of ['pointercancel','pointerup','lostpointercapture'])$('curve').addEventListener(typ,()=>{if(dragPointer!==null)saveStorage();dragPointer=null;dragStart=null;});
+$('curve').addEventListener('keydown',e=>{if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();if(e.key==='ArrowLeft'||e.key==='ArrowRight') {if(lesson===2) activePoint=activePoint===1?2:1;}else{pts[activePoint].y=clamp(pts[activePoint].y+(e.key==='ArrowUp'?3:-3),0,255);interactionCount++;onCurveChanged();}if(e.key==='ArrowLeft'||e.key==='ArrowRight')requestRender();});
 $('curve').setAttribute('tabindex','0');
 $('lessonTabs').addEventListener('click',e=>{const b=e.target.closest('[data-lesson]');if(b)changeLesson(Number(b.dataset.lesson));});
-$('resetBtn').addEventListener('click',()=>changeLesson(lesson));
+$('resetBtn').addEventListener('click',()=>changeLesson(lesson,{reset:true}));
 $('langSelect').addEventListener('change',e=>setLang(e.target.value==='fi'?'fi':'en'));
 $('settingsBtn').addEventListener('click',()=>$('settingsDialog').showModal());
 $('closeSettings').addEventListener('click',()=>$('settingsDialog').close());
 $('settingsDialog').addEventListener('click',e=>{if(e.target===$('settingsDialog'))$('settingsDialog').close();});
 $('hintBtn').addEventListener('click',()=>{hintShown=true;progress.hint[lesson]=true;saveStorage();$('theory').open=true;$('theoryBody').textContent=T()['hint'+lesson]+' '+T()['scene'+lesson].theory;});
+$('reviewBtn').addEventListener('click',assessEdit);
 $('exportBtn').addEventListener('click',exportProgress);
 $('importBtn').addEventListener('click',()=>$('importInput').click());
-$('importInput').addEventListener('change',async e=>{const file=e.target.files?.[0];e.target.value='';if(!file)return;try{if(file.size>100000)throw Error('size');const data=JSON.parse(await file.text());if(data.app!=='visual-academy'||data.schema!==2||!Array.isArray(data.complete)||data.complete.length!==3)throw Error('format');for(let i=0;i<3;i++){progress.complete[i]=progress.complete[i]||data.complete[i]===true;progress.best[i]=Math.max(progress.best[i],clamp(Number(data.best?.[i]||0),0,255));progress.hint[i]=progress.hint[i]||data.hint?.[i]===true;}saveStorage();refreshTabs();alert(lang==='fi'?'Edistyminen palautettu.':'Progress restored.');}catch(err){alert(lang==='fi'?'Tiedosto ei ole kelvollinen edistymisen varmuuskopio.':'That file is not a valid progress backup.');}});
+$('importInput').addEventListener('change',async e=>{
+  const file=e.target.files?.[0];e.target.value='';if(!file)return;
+  try{
+    if(file.size>100000)throw Error('size');
+    const data=JSON.parse(await file.text());
+    if(data.app!=='visual-academy'||![2,3].includes(data.schema)||
+      !Array.isArray(data.complete)||data.complete.length!==3)throw Error('format');
+    saveStorage(); // Keep unfinished local work before deciding which imported drafts are safe.
+    for(let i=0;i<3;i++){
+      progress.complete[i]=progress.complete[i]||data.complete[i]===true;
+      progress.best[i]=Math.max(progress.best[i],clamp(Number(data.best?.[i]||0),0,255));
+      progress.hint[i]=progress.hint[i]||data.hint?.[i]===true;
+      // Never silently overwrite an already started local draft.
+      if(!drafts[i]||drafts[i].edits===0)
+        drafts[i]=validDraft(data.drafts?.[i],i)||drafts[i];
+    }
+    writeStorage();refreshTabs();
+    alert(lang==='fi'?'Edistyminen palautettu. Omia keskeneräisiä muutoksia ei korvattu. Avaa harjoitus uudestaan nähdäksesi palautetun luonnoksen.':'Progress restored. Unfinished local edits were not overwritten. Reopen a lesson to see an imported draft.');
+  }catch(err){alert(lang==='fi'?'Tiedosto ei ole kelvollinen edistymisen varmuuskopio.':'That file is not a valid progress backup.');}
+});
 $('nextBtn').addEventListener('click',()=>{if(!progress.complete[lesson])return;changeLesson(lesson===2?0:lesson+1);window.scrollTo({top:0,behavior:'smooth'});});
 $('compareBtn').addEventListener('pointerdown',e=>{showOriginal=true;$('originalBadge').hidden=false;dc.putImageData(sourceImg,0,0);$('compareBtn').setPointerCapture(e.pointerId);e.preventDefault();});
 for(const typ of ['pointerup','pointercancel','lostpointercapture'])$('compareBtn').addEventListener(typ,()=>{showOriginal=false;$('originalBadge').hidden=true;if(editedImg)dc.putImageData(editedImg,0,0);});
 $('compareBtn').addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){showOriginal=true;$('originalBadge').hidden=false;dc.putImageData(sourceImg,0,0);e.preventDefault();}});
 $('compareBtn').addEventListener('keyup',()=>{showOriginal=false;$('originalBadge').hidden=true;if(editedImg)dc.putImageData(editedImg,0,0);});
 for(let j=1;j<4;j++){const x=36+j*292/4,y=10+j*173/4;for(const [x1,y1,x2,y2] of [[x,10,x,183],[36,y,328,y]]){const el=document.createElementNS(SVGNS,'line');for(const [k,v] of Object.entries({x1,y1,x2,y2}))el.setAttribute(k,v);el.setAttribute('class','curve-grid');$('curveGrid').appendChild(el);}}
-readStorage();changeLesson(lastLesson);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveStorage();});
+window.addEventListener('pagehide',saveStorage);
+readStorage();changeLesson(lastLesson,{initial:true});
 if('serviceWorker' in navigator && location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
