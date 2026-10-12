@@ -7,6 +7,9 @@ test('00B is localized, compares the same scene and preserves inspected position
   await page.locator('#labLink').click();
   await expect(page).toHaveURL(/\/lessons\/00b\.html\?lang=fi$/);
   await expect(page.locator('h1')).toContainText('Mitä muutos tuo esiin');
+  await expect(page).toHaveTitle('Visual Academy · Jakso 00B · Kuvavertailu');
+  await expect(page.locator('#zoomHelp')).toContainText('nuolinäppäimet');
+  await expect(page.locator('#frame')).toHaveAttribute('aria-label',/Escape/);
   const photo=page.locator('#photo');
   await expect(photo).toHaveAttribute('src',/^data:image\/webp;base64,/);
   await expect(photo).toHaveJSProperty('complete',true);
@@ -22,6 +25,9 @@ test('00B is localized, compares the same scene and preserves inspected position
   await expect(page.locator('#hint')).toBeVisible();
   await page.locator('#lang00').selectOption('en');
   await expect(page.locator('h1')).toContainText('What does an edit reveal');
+  await expect(page).toHaveTitle('Visual Academy · Module 00B · Image comparison');
+  await expect(page.locator('#zoomHelp')).toContainText('arrow keys');
+  await expect(page.locator('#frame')).toHaveAttribute('aria-label',/Escape/);
   await expect(page.locator('#hint')).toContainText('8-bit');
   await page.locator('#returnLink').click();
   await expect(page.locator('#scene')).toBeVisible();
