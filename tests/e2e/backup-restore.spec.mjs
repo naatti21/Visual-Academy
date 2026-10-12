@@ -11,13 +11,14 @@ const stored=page=>page.evaluate(key=>JSON.parse(localStorage.getItem(key)),key)
 async function restore(page,payload){
   await page.locator('#settingsBtn').click();
   const notice=page.waitForEvent('dialog');
-  await page.locator('#importInput').setInputFiles({
+  const upload=page.locator('#importInput').setInputFiles({
     name:'valid-backup.json',mimeType:'application/json',
     buffer:Buffer.from(JSON.stringify(payload))
   });
   const dialog=await notice;
   expect(dialog.message()).toContain('restored');
   await dialog.accept();
+  await upload;
   await page.locator('#closeSettings').click();
 }
 
@@ -43,6 +44,7 @@ test('QA-01: started local draft is never overwritten; other imported drafts sur
   await page.goto('/');
   await page.locator('#curve').focus();
   for(let i=0;i<4;i++)await page.keyboard.press('ArrowUp');
+  await expect.poll(async()=> (await stored(page)).drafts[0].edits).toBeGreaterThan(0);
   const local=await stored(page);
   const original=local.drafts[0];
   expect(original.edits).toBeGreaterThan(0);
