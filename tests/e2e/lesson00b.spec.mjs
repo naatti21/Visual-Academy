@@ -36,7 +36,7 @@ test('00B can open offline after installation without breaking existing progress
       navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true});
     });
   });
-  const before=await page.evaluate(()=>JSON.parse(JSON.parse(localStorage.getItem('visual-academy-proto-02'))));
+  const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('visual-academy-proto-02')));
   await page.goto('/lessons/00b.html?lang=en');
   await expect(page.locator('#photo')).toHaveJSProperty('complete',true);
   await context.setOffline(true);
@@ -46,6 +46,6 @@ test('00B can open offline after installation without breaking existing progress
   await context.setOffline(false);
   await page.locator('#returnLink').click();
   await expect(page.locator('#scene')).toBeVisible();
-  const after=await page.evaluate(()=>localStorage.getItem('visual-academy-proto-02'));
+  const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('visual-academy-proto-02')));
   for(const key of ['complete','best','hint','drafts','lastLesson','lang']) expect(after[key]).toEqual(before[key]);
 });
