@@ -28,7 +28,7 @@ test('00B translation, comparisons and detailed image inspection remain availabl
   assert.match(html,/startPinch/);
   assert.match(html,/function show\(k\)/);
   assert.match(html,/techni(?:cal|nen)/i);
-  assert.match(html,/const TR/);
+  assert.match(html,/const STRINGS=/);
   assert.match(home,/id="labLink"/);
   assert.match(app,/labButton:'Avaa kuvavertailu/);
   assert.match(app,/labButton:'Open image comparison/);
