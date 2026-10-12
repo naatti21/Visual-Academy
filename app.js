@@ -354,8 +354,11 @@ $('importInput').addEventListener('change',async e=>{
       if(!drafts[i]||drafts[i].edits===0)
         drafts[i]=validDraft(data.drafts?.[i],i)||drafts[i];
     }
-    writeStorage();refreshTabs();
-    alert(lang==='fi'?'Edistyminen palautettu. Omia keskeneräisiä muutoksia ei korvattu. Avaa harjoitus uudestaan nähdäksesi palautetun luonnoksen.':'Progress restored. Unfinished local edits were not overwritten. Reopen a lesson to see an imported draft.');
+    // The restored draft must become the active editor state before any future
+    // pagehide, reload or lesson switch can capture an older editor snapshot.
+    // The merge above protects locally started work (edits > 0).
+    changeLesson(lesson,{initial:true});
+    alert(lang==='fi'?'Edistyminen palautettu. Omia keskeneräisiä muutoksia ei korvattu.':'Progress restored. Unfinished local edits were not overwritten.');
   }catch(err){alert(lang==='fi'?'Tiedosto ei ole kelvollinen edistymisen varmuuskopio.':'That file is not a valid progress backup.');}
 });
 $('nextBtn').addEventListener('click',()=>{if(!progress.complete[lesson])return;changeLesson(lesson===2?0:lesson+1);window.scrollTo({top:0,behavior:'smooth'});});
