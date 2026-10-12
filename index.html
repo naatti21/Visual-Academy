@@ -9,8 +9,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
-  <link rel="stylesheet" href="./styles.css?v=0.2.4">
-  <title>Visual Academy · Light Lab 0.2.4</title>
+  <link rel="stylesheet" href="./styles.css?v=0.2.5">
+  <title>Visual Academy · Light Lab 0.2.5</title>
 </head>
 <body>
   <main class="app">
@@ -27,6 +27,12 @@
       <button class="lesson-tab" type="button" data-lesson="1"><span class="tab-number">02</span><span data-i18n="tab1">Histogram</span><span class="tab-tick" id="tick1"></span></button>
       <button class="lesson-tab" type="button" data-lesson="2"><span class="tab-number">03</span><span data-i18n="tab2">Forest tones</span><span class="tab-tick" id="tick2"></span></button>
     </nav>
+    <section class="lab-entry" aria-labelledby="labHeading">
+      <div><span class="eyebrow" data-i18n="labLabel">MODULE 00 · IMAGE READING</span>
+      <h3 id="labHeading" data-i18n="labTitle">What does an edit reveal — and hide?</h3>
+      <p data-i18n="labDesc">Compare three real pixel transformations and notice what changes. No scores.</p></div>
+      <a id="labLink" class="secondary-btn" href="./lessons/00b.html?lang=en" data-i18n="labButton">Open image comparison →</a>
+    </section>
     <div class="workspace">
       <section class="left-pane" aria-labelledby="lessonTitle">
         <div class="lesson-brief"><p class="eyebrow" id="lessonKicker"></p><h3 id="lessonTitle"></h3><p id="lessonGoal"></p><p class="resume-note" id="resumeNote" role="status"></p>
@@ -60,7 +66,7 @@
         <p class="footnote" data-i18n="footnote">An 8-bit pixel-based learning model, not a RAW editor. The histogram and feedback are calculated from the modified image, not staged animations.</p>
       </section>
     </div>
-    <footer class="site-footer"><span data-i18n="privacy">Local-first, no account. Progress stays on this device until exported.</span><span>v0.2.4 · TEST</span></footer>
+    <footer class="site-footer"><span data-i18n="privacy">Local-first, no account. Progress stays on this device until exported.</span><span>v0.2.5 · TEST</span></footer>
     <dialog id="settingsDialog" class="settings-modal" aria-labelledby="settingsHeading">
       <div class="settings-head"><h2 id="settingsHeading" data-i18n="settings">Settings</h2><button id="closeSettings" type="button" class="close-settings" aria-label="Close" data-i18n-aria="close">×</button></div>
       <p data-i18n="settingsDescription">Learning progress stays on this device. Save a backup file or restore one here.</p>
@@ -91,6 +97,6 @@
       </details>
     </dialog>
   </main>
-  <script src="./app.js?v=0.2.4" defer></script>
+  <script src="./app.js?v=0.2.5" defer></script>
 </body>
 </html>

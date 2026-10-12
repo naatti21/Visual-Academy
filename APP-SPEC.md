@@ -67,3 +67,11 @@ Työ keskeytyy helposti: harjoituksen versio/kuvavariantti, käyräpisteet, työ
 6. Ylläpidä jo käytössä olevia regressiotestejä, mobiili-E2E:tä ja Quality gate → Pages -julkaisuporttia playbookin mukaan.
 
 **Vahvistettu tavoite:** käyttäjä ei opettele etsimään oikeaa pistettä tai vihreää merkkiä vaan tekemään omien kuvien muokkauspäätöksiä perustellusti.
+
+## 00B:n kokeilupäivitys — PR-kandidaatti 0.2.5 (12.10.2026)
+
+- 00B on valinnainen kaksikielinen kuvavertailu: alkuperäinen AI-generoitu valokuvaa jäljittelevä kuva ja siitä todellisilla 8-bittisillä pikselimuunnoksilla tehdyt kaksi versiota.
+- Kuvaa voidaan zoomata, panoroida ja vaihtaa varianttia samaa kohdetta tarkastellen. Palautetta ei pisteytetä; selitys on vapaaehtoinen.
+- Kokonaisuus on itsenäinen, offline-esivälimuistiin kuuluva harjoitus. Se ei muuta olemassa olevien kolmen käyrätehtävän järjestystä, edistymistä, luonnoksia eikä backup-skeemaa.
+- 00A:n aito valokuva, rajausvertailu ja lopullinen opetuksen järjestyksen muutos ovat erillisiä jatkotöitä. 00A:n alkuperäinen kuva on vahvistettava paikallisesti offline-käyttöä varten ennen integrointia.
+- Tämä on **PR-kandidaatti, ei vahvistettu tuotantojulkaisu**. Erillinen QA, käyttäjän hyväksyntä ja mainin julkaisusavustus tarvitaan Playbook v1.8:n mukaan.

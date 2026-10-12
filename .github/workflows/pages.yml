@@ -53,9 +53,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p site/icons
+          mkdir -p site/icons site/lessons
           cp index.html app.js styles.css sw.js manifest.webmanifest site/
+          cp lessons/00b.html site/lessons/
           cp icons/icon-192.png icons/icon-512.png site/icons/
+          test -s site/lessons/00b.html
           test -s site/index.html
           test -s site/app.js
           test -s site/sw.js
