@@ -1,103 +1,50 @@
-# Visual Academy — 00A:n integrointisuunnitelma
+# Visual Academy — 00A integration handoff (v7 approved → FI/EN candidate)
 
-**Päivä:** 12.10.2026  
-**Tila:** hyväksytyn v4-prototyypin pohjalta laadittu toteutussuunnitelma; EI tuotantototeutus eikä julkaisulupa  
-**Tuote:** `naatti21/Visual-Academy`  
-**Perusta:** Äppejä Playbook v1.9.1; `APP-SPEC.md`; Jakso 00:n suunnitelma ja materiaalipäätös; pedagoginen auditointi 11.10.; 00A-v4:n käyttäjätesti 12.10.  
-**Riippuvuus:** nykyinen 00B-PR #5 (kandidaatti `c6f8837853d657f615734295c8458164353c3163`) on edelleen draft / erillistä QA-GO:ta odottava. Tuotannon `main` oli tarkistushetkellä `ca5c6ff25d64ac8fd83ca593ec06b342ccf699d1`, v0.2.4.
+**Updated:** 2026-10-13  
+**Branch:** `feat/visual-academy-00a-image-reading` (draft PR #6, initially based on `main` v0.2.4)  
+**Status:** user-approved Finnish v7 prototype; standalone bilingual candidate and tests under development. **Not published, not QA-GO.**
 
-## 1. Lukitut tuoteratkaisut
+## Product and learning decisions
 
-**00A on Jakso 00:n ensimmäinen oppimisharjoitus**, ennen 00B:tä ja nykyistä Jakso 01:n käyrä-/histogrammilaboratoriota. Harjoitus on ohjelmistoriippumaton, mobiili ensin, noin 3–5 minuutin havainnointi- ja päätöstehtävä, ei uusi editori.
+00A remains the first *optional* image-reading lesson in Module 00. 00B follows it as an independent optional comparison lesson; Module 01 retains all three existing tone-curve lessons and their unchanged progress/backup schema. First learn to observe and decide; only then explore what the edit does. No score for aesthetic preference.
 
-00A-v4:n todellisella Lasipalatsin kuvalla käyttäjä hyväksyi **kolmannen rajauksen**: se näyttää ratikan kokonaisuudessaan suurempana. Aiempi samankeskinen "tiukempi zoom" hylättiin; kolmas ratkaisu on **samankokoinen mutta vaakasuunnassa kuvan oikeaan reunaan siirretty rajaus**. Käyttäjän todellinen havainto: ensimmäinen tiukempi rajaus korostaa ratikkaa ja jättää viereisen raiteen pysäkin pois. Tätä palautetta pidetään prototyypin hyväksyntänä, ei kaikkien tulevien käyttäjien oppimistutkimuksena.
+The **current source image is our original AI-generated 1536×1024 tram/station street scene**, not the historical Lasipalatsi Commons photograph. Preserve visible disclosure in FI/EN that this is synthetic and cannot be treated as documentary evidence. Embedded 00A WebP SHA-256: `d4854b922b0c3c537bc9a06c928b9f91870c2afbeee351faa0435bc2e0bb3b87`. Image is stored once, never recomposed, cropped by real pixel coordinates. No external image dependency.
 
-Sisältö säilyy v4:n viidessä vaiheessa:
-1. Ensihavainto aidosta kuvasta ilman säätimiä.
-2. Tunnelmallisen kaupunkijulisteen tavoite.
-3. Joukkoliikenteen tiedotuskuvan tavoite ja perustelu.
-4. Oman valinnan yhteenveto ilman kauneuspisteytystä.
-5. Koko kuva / ratikka esiin / oikeaan reunaan siirretty rajaus, hyötyjen ja menetetyn kontekstin vertailu.
+The user approved the revised Finnish v7 image/crop test on an actual phone. Its source coordinate rectangles (pixels, 1536×1024) are **locked**:
 
-**Rajausmalli lukitaan v4:n käyttäjätestattuun lähtökohtaan**: kaksi rajausvaihtoehtoa molemmat `scale(1.58)` samasta paikallisesta valokuvasta, keskimmäisessä `transform-origin:52% 55%`, viimeisessä `transform-origin:100% 55%` 4:3-kehyksessä. Näytä molempien alueiden rajausoppaat koko kuvassa. Tarkista todellisesta lopullisesta paikallisesta kuvatiedostosta, että rajaus ei leikkaa ratikan tärkeää osaa. Älä muuta rajauskokoa huomaamatta.
+| View | x | y | width | height | Purpose |
+|---|---:|---:|---:|---:|---|
+| Whole image | 0 | 0 | 1536 | 1024 | Overall scene, lighting, surroundings and both crop outlines |
+| Information crop | 0 | 18 | 480 | 1000 | At the **left edge**: timetable, stop, waiting people, arriving distant tram |
+| Artistic crop | 1095 | 285 | 390 | 592 | At the **right**: tram front and graphic details |
 
-**Ei tehdä:** valmiita makuarvosanoja, aina-paras-rajausväitettä, uuden kuvan generointia, 00A:n edistymisen liittämistä vanhojen kolmen kurssin dataindekseihin, uusien backup-skeemojen luontia tai mainin automaattista julkaisua.
+**Aspect ratios deliberately differ.** Do not restore the outdated v4 rule of equal-sized crops or middle-centered zoom. The same `CROP_BOXES` geometry must drive both the source-image dashed rectangle and `drawImage` crop output. The user explicitly rejected the v6 middle crop and inaccurate guides.
 
-## 2. Etusivu ja oppimispolku
+The five-stage structure stays: (1) first observation; (2) atmospheric-poster purpose; (3) information/public-transit purpose and reasoning; (4) review without aesthetic grading; (5) compare the whole picture, information crop and artistic crop. Teach composition (subject, leading lines, space, aspect ratio, thirds as a guide) without making the rule of thirds a pass criterion. Repetition/transfer to *other images* is a future lesson family, not proof of this test's learning efficacy.
 
-**Etusivun näkyvä oppimisjärjestys:**
+## Work package and exact repo paths
 
-- `MODULE 00 · LEARN TO SEE / JAKSO 00 · OPETTELE KATSOMAAN` — yksi tiivis erillinen oppimiskortti, jossa kaksi vapaaehtoista alakohtaa.
-  - **00A · Observe & decide / Havainnoi ja päätä** — ensisijainen selkeä "Aloita tästä" -toiminto.
-  - **00B · Compare edits / Vertaa muokkauksia** — toinen valinnainen toiminto, ei lukita 00A:n suorittamiseen.
-- `MODULE 01 · LIGHT / JAKSO 01 · VALO` — kolme olemassa olevaa sävykäyrä-/histogrammitehtävää kuten nyt.
+**This draft's implementation scope (independent of PR #5):**
 
-PR #5 tuo jo yhden erillisen 00B-kortin etusivulle. **Laajenna sama kortti 00A+00B-kokonaisuudeksi**, älä lisää toista päällekkäistä Jakso 00 -korttia. Kortti voidaan pitää aloitusnäkymässä ennen aktiivisia sävytehtäviä, mutta vanhoja kolmea välilehteä ei nimetä uudelleen eikä niiden tallennuksen järjestystä muuteta.
-
-00A:n ja 00B:n väliset paluulinkit säilyttävät valitun UI-kielen (`?lang=fi` / `?lang=en`). Etusivun kieli luetaan sovelluksen omasta olemassa olevasta asetuksesta. Uudet harjoitukset eivät kirjoita vanhojen tehtävien `visual-academy-proto-02`-dataa. **00A on tässä vaiheessa tarkoituksella tilaton:** vastaukset elävät vain avoimessa sivussa; uudelleenavaaminen aloittaa alusta. Jos myöhemmin vaaditaan tarkkaa jatkamista, se määritellään erillisessä skeemapäätöksessä.
-
-## 3. Tiedostokohtainen toteutuspaketti
-
-Polut ovat GitHub-repon juuresta. Tämä on **toteutettava muutospaketti, ei väite jo tehdyistä koodimuutoksista**.
-
-| Polku | Toiminto | Sisältö |
+| Path | Action | Role |
 |---|---|---|
-| `lessons/00a.html` | **LISÄÄ** | Itsenäinen FI/EN-versio hyväksytystä v4:stä, viisi vaihetta, puhelin-zoom/pan, kolmivaihtoehtoinen rajaus, paluu etusivulle. Poista prototyyppitekstit ja verkkokuvan riippuvuus vasta kun offline-kuva on valmis. |
-| `assets/00a-lasipalatsi-jip-1280.jpg` | **LISÄÄ vasta kuvaportin jälkeen** | Valitusta Commonsin alkuperäisestä tehty paikallinen noin 1280×960 JPEG. Älä käytä kuvakaappausta tai toista valokuvaa korvikkeena. Pidä yksi yhteinen kuvatiedosto kaikille rajauksille. |
-| `docs/00A-IMAGE-SOURCE.md` | **LISÄÄ** | Lähdesivu, tekijä, lisenssi, latauspäivä, alkuperä-/vientimitat, SHA-256, esikatselun tekninen käsittely ja CC BY-SA:n attribuutio sekä muutosmerkintä. |
-| `index.html` | **MUUTA** | Muuta PR #5:n Module 00 -kortti kahden harjoituksen kortiksi. 00A ensin, 00B sen jälkeen. Ei vanhojen tehtävien uudelleennumerointia. |
-| `app.js` | **MUUTA** | FI/EN-korttitekstit ja 00A-/00B-linkkien kieliparametrit. Säilytä vanhat oppimistilan avaimet, indeksit ja backup-logiikka. |
-| `styles.css` | **MUUTA** | Kahden toiminnon mobiilikortti, 360–412 px saavutettavat painikkeet ilman vaakaylivuotoa. Vain vähimmäismuutokset. |
-| `sw.js` | **MUUTA** | Uusi välimuistiversio; sisällytä `lessons/00a.html` ja paikallinen valokuva precacheen; 00A:n ja 00B:n navigoinnin offline-fallback **oikealle harjoitussivulle**. |
-| `.github/workflows/pages.yml` | **MUUTA** | Kopioi 00A-sivu ja paikallinen kuva Pages-artifaktiin; säilytä nykyinen `main` + SHA + onnistuneen CI:n julkaisuportti. |
-| `tests/lesson00a.test.mjs` | **LISÄÄ** | Kuvan paikallisuus, FI/EN-tekstit, 3 rajausvaihtoehtoa, kahden rajauksen yhtäläinen koko ja eri sijainti, lisenssikrediitit, SW/Pages-reitti. |
-| `tests/e2e/lesson00a.spec.mjs` | **LISÄÄ** | 5 vaihetta, valinnat ja paluu, FI/EN, aidon kuvan lataus, rajausvaihtojen ero, 360/390/412 px, offline ensi-asennuksen jälkeen, paluu sävytehtäviin ja vanhan datan muuttumattomuus. |
-| `APP-SPEC.md` | **MUUTA** | Kirjaa Jakso 00:n pedagoginen järjestys, 00A:n statukset ja tiedon tallentamisen rajaus ilman julkaisuväitettä. |
-| `package.json` sekä `index.html`- ja `sw.js`-versiot | **MUUTA julkaisuhaaran synkronoinnin jälkeen** | Versiota ei lyödä lukkoon ennen PR #5:n kohtaloa; uuden PR:n lopullinen SHA, versio ja CI ratkaisevat julkaistavan koosteen. |
+| `prototypes/00a-v7.html` | ADD | **Frozen Finnish v7** reference; user's accepted crop geometry, preserved unchanged. Not bundled in Pages. |
+| `lessons/00a.html` | ADD | Bilingual FI/EN, original embedded local WebP, all 5 stages, 3 pixel-accurate crops, source-backed outlines, pan/pinch, source disclosure and link to app home. Pre-integration *candidate only*. |
+| `tests/lesson00a.test.mjs` | ADD | Source SHA, exact crop boxes, FI/EN contents, locally embedded asset and isolation from Module 01 data. |
+| `tests/e2e/lesson00a.spec.mjs` | ADD | Mobile Chromium language/5-stage/crop pixel checks, no horizontal overflow or remote image requests, no mutation of old progress. |
+| `docs/00A-INTEGRATION-PLAN.md` | UPDATE | Current AI-source policy and steps, supersedes earlier v4/Commons planning. |
 
-**Ennallaan:** nykyiset kolme käyräharjoitusta, niiden oppimistulokset, localStorage-avaimet, skeemat 2/3, backup-tiedostomuoto ja julkaisuportin turvallisuuslogiikka.
+**Deferred, not yet written/authorized in this draft:** `index.html`, `app.js`, `styles.css`, `sw.js`, `.github/workflows/pages.yml`, `APP-SPEC.md`, package version. These are the **single future integration** after PR #5's independent QA and explicit user GO, so only one Module 00 homepage card exists. This avoids PR branches that conflict on homepage, SW or Pages packaging. The current `lessons/00a.html` lives only in the PR checkout; it is not an accessible production route and has **not** been tested as an installed PWA offline route.
 
-## 4. Aito kuvatiedosto, tekijänoikeus ja offline-portti
+Future integrated homepage: `00A Observe & decide / Havainnoi ja päätä` first, `00B Compare edits / Vertaa muokkauksia` second (both optional), then unchanged Module 01. Keep `?lang=fi/en` across lesson and home. The 00A standalone currently reads the app's stored language but **does not write** any Module 01 storage or backups. 00A answers are intentionally ephemeral; no resume promises or schema changes.
 
-Lähde: <https://commons.wikimedia.org/wiki/File:Lasipalatsi_tram_stop_at_night.jpg>. Wikimedia Commonsin tiedot tarkistettu 12.10.2026:
-- **Tekijä:** JIP.
-- **Oma valokuva, 24.3.2016; alkuperäinen 4032×3024 JPEG.**
-- **Lisenssi:** Creative Commons Attribution-ShareAlike 4.0 International (<https://creativecommons.org/licenses/by-sa/4.0/>). Lähdesivulla on lisäksi muita ilmoitettuja lisenssivaihtoehtoja; suunniteltuun käyttöön valitaan nimenomaan CC BY-SA 4.0.
-- Kreditoi sekä suomeksi että englanniksi: `Photo / Kuva: JIP — Lasipalatsi tram stop at night, Wikimedia Commons, CC BY-SA 4.0. Resized for display; alternative views are crops of the same photo. / Pienennetty näyttöä varten; vertailunäkymät rajaavat samaa kuvaa.` Tekijä- ja lisenssilinkit toimivia.
-- **ShareAlike:** jos sovellus jakaa valokuvan muokatun/johdetun version (kuten pienennetyn exportin), ylläpidä soveltuvaa CC BY-SA -lisenssiä sille kuvatiedostolle. Erottele kuvan lisenssi ohjelmakoodin lisenssistä; älä lupaa, että pelkkä linkki täyttäisi kaikki ehdot.
+## QA and release boundary
 
-**Hankintaa ei ole vielä vahvistettu.** Tässä ympäristössä Commonsin sivun metatiedot näkyivät, mutta itse JPEG-tiedoston lataus ei onnistunut (verkkoeste). Prototyypin `https://upload.wikimedia.org/...` toimii käyttäjän puhelimella, mutta se ei ole offline-PWA-omaisuus. Ennen toteutus-PR:n viimeistelyä pitää saada oikeat kuvabitit, tarkistaa JPEG-tunniste, kuvasuhde/mitat, värit/taustan näkyvyys, kuvan SHA-256 ja kahden saman kokoisen rajauksen oikea osuminen. Älä vaihda aineistoa generoiduksi tai ota kuvakaappauksesta korviketta. Mikäli lähdettä ei voi hankkia, **00A:n tuotantointegraatio on BLOCKED** eikä sitä esitetä offline-valmiina.
+Before integrating into `main`:
 
-## 5. Kokeet ja hyväksymisportti
+1. Confirm PR #5 status, independent re-QA and explicit user GO (currently still pending). Avoid including its unapproved changes via silent PR rebasing/merging.
+2. Verify this lesson's **exact HEAD SHA** and run all developer unit/E2E tests in GitHub CI. Browser tests should exercise actual source pixels; a green workflow is developer-side evidence only, not independent release GO.
+3. When the integration is genuinely ready, extend the existing PR #5 Module 00 card; add `lessons/00a.html` to Pages packaging and SW precache/00A navigation fallback. Verify installed/offline route with real Playwright+SW; verify all FI/EN strings and old draft/backup regression cases.
+4. User checks the bilingual/integrated screen if meaningful differences from approved v7 appear. Risk-based independent acceptance and explicit user GO before **any** merge or deploy. No broad Work audit unless evidence justifies it.
 
-**Tekniset:**
-1. Todellinen tiedosto latautuu sovelluksen omalta originilta sekä online- että offline-tilassa (myös kieliparametrien kanssa).
-2. FI/EN lokalisoivat kaikki tehtävävaiheet, painikkeet, kuvaustekstit, sivuotsikon, saavutettavuustekstit ja lähdekrediitit.
-3. Sormizoomaus ja yhden sormen siirto toimivat; koko kuvan tilassa normaali sivuvieritys toimii; näppäimistöllä on vaihtoehtoinen käytettävä ohjaus.
-4. Rajausvaihdossa 2 ja 3 kuvakoko ja suurennusaste ovat samat; ero syntyy **sijainnista**. Kolmas rajaus näyttää ratikan kokonaisuudessaan käyttäjätestatun v4:n tapaan. Rajausoppaat vastaavat oikeita näkyviä alueita.
-5. 360/390/412 px mobiilinäkymät ja ainakin yksi leveämpi näyttö: ei tahatonta vaakavieritystä, pääkohde luettava.
-6. Vanhojen sävytehtävien tabit, luonnokset, palautukset, osaamismerkit ja kielivalinta toimivat ennallaan, eikä 00A:ssa käyminen muuta niitä.
-7. CI koko `npm test` vihreä viimeiselle SHA:lle, GitHub Pages paketoi kaikki 00A-tiedostot, **mutta PR:n CI ei yksin ole julkaisuhyväksyntä**.
-
-**Pedagogiset:**
-- Aloittelija voi valita perustellusti minkä tahansa kolmesta rajauksesta, myös alkuperäisen. Ei ennaltamäärättyä esteettisesti oikeaa vaihtoehtoa.
-- Kysymykset ohjaavat nimeämään yhden hyödyn ja yhden kontekstin menetyksen, sekä vaihtamaan kuvavalintaa käyttötarkoituksen mukaan.
-- Tekstit erottavat teknisen tosiasian (näkyvissä olevan kuvan osan ja rajauksen mitat), käyttäjän havainnon ja esteettisen arvostelman.
-- Hyväksytty käyttäjän prototyyppikoe on perusteltu signaali, **ei mitattu yleistettävä oppimisvaikutus**. Myöhempään siirtotestiin tarvitaan toinen, entuudestaan tuntematon valokuva.
-
-**Riippumaton julkaisuportti:** käytetään Playbook v1.9.1:n riskiperusteista QA:ta, kohdennettuja selaintestejä ja tarvittaessa yksi rajattu itsenäinen käyttöliittymän/sisällön katselmointi. Workia **ei käynnistetä automaattisesti**. Pysyvästä offline-tiedostosta ja koko harjoituksen julkaistavasta HEAD-SHA:sta on oltava näyttö; muuten NOT RUN / NO-GO. Merge ja mainin deploy vasta erillisellä käyttäjän GO:lla.
-
-## 6. Toteutusjärjestys ja haarastrategia
-
-1. **Nyt:** pidä hyväksytty v4-prototyyppi ja tämä toteutussuunnitelma erillään PR #5:stä. Dokumenttivaiheen PR ei ole 00A:n julkaisu.
-2. **Seuraava riippuvuus:** hanki/varmenna oikea Commons-tiedosto ja CC BY-SA -attribuutio; tee paikallinen optimoitu asset. Jos estyy, merkitse BLOCKED ja lopeta eikä korvata kuvaa tekaistulla vastineella.
-3. **PR #5 ensin:** kun #5 läpäisee rajatun riippumattoman QA:n ja saa käyttäjän erillisen GO:n, yhdistä se mainiin. Vasta sitten aloita varsinaiset 00A:n koodimuutokset mainista tai synkronoi 00A:n erillinen haara uudelle mainille. Älä tee 00A-feature-PR:stä vahingossa 00B:n committeja sisältävää kaksois-PR:ää.
-4. **Sitten toteutus:** `lessons/00a.html` ja asset → etusivun jakso 00 → offline/Pages → regressiot/APP-SPEC → Quality gate viimeiselle commitille → rajattu riippumaton QA → käyttäjän GO → julkaisu.
-5. Päivitä `00_NOW.md` vain oikean tilan muutoksista. Ei turhia koko Playbookin uusintaversioita.
-
-## 7. Tunnetut rajat
-
-- Prototyyppi v4 on **suomenkielinen** ja **verkkokuvasta riippuvainen**; FI/EN ja offline ovat tulevan toteutuksen vaatimuksia, eivät nykyisiä todennettuja ominaisuuksia.
-- Käyttäjä hyväksyi v4:n ratikkaan osuvan rajauksen puhelimella. Lähdebitin hankinta ja lopullisen optimoidun assetin kuvallinen regressio ovat avoimia.
-- PR #5:llä on 17/17 Node + 10/10 mobiili-E2E läpäisty, mutta riippumattoman korjaus-QA:n GO puuttui tämän suunnitelman laadintahetkellä. Ei oikeuta mainin mergeä.
-- Aiemmat dokumentit ovat osittain luonnoksia; tässä tehdyt yksilöidyt suunnitteluratkaisut ovat nykyinen toteutuslinja käyttäjän hyväksymään 00A-v4:ään pohjautuen. Ne eivät takautuvasti muuta julkaistua sovellusta.
+**Known limits:** This is a generated 8-bit photo-like image, **not a sensor RAW**, not an authentic Helsinki photograph, and not legal proof of any specific city or tram service. A successful demo with one image does not demonstrate knowledge transfer to unseen scenes.
