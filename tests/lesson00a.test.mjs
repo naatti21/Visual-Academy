@@ -43,3 +43,14 @@ test('00A stays isolated from Module 01 progress and backup data',()=>{
  assert.ok(html.includes("localStorage.getItem(APP_STORAGE)"));
  assert.doesNotMatch(html,/localStorage\.setItem|indexedDB\.open|fetch\(/);
 });
+
+
+test('00A language switching cannot fail on a blocked or read-only URL',()=>{
+ assert.match(html,/function updateLanguageQuery\(\)/);
+ assert.match(html,/location\.protocol!==['"]https:['"]&&location\.protocol!==['"]http:['"]/);
+ assert.match(html,/history\.replaceState\(null,''?,?\s*url\)/);
+ assert.match(html,/catch\(_error\)/);
+ const eventBlock=html.slice(html.indexOf("$('langSelect').addEventListener('change'"),html.indexOf("photo.addEventListener('error'"));
+ assert.ok(eventBlock.indexOf('updateLanguageQuery();')<eventBlock.indexOf('chrome();renderStep();'));
+ for(const required of ['Harjoituksen vaiheet','Learning stages','Valitse rajaus','Choose a crop'])assert.ok(html.includes(required));
+});
