@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="color-scheme" content="dark"/>
+<title>Visual Academy · 00A · Havainnot ja rajaus (testi v4)</title>
+<style>
+:root { font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color-scheme:dark; }
+* { box-sizing:border-box; }
+body { margin:0; background:#101820; color:#e9f1f2; }
+main { max-width:780px; margin:auto; padding:14px 14px 32px; }
+.eyebrow { color:#9ed0cf; font-size:.75rem; letter-spacing:.055em; font-weight:650; }
+h1 { font-size:1.36rem; margin:6px 0 8px; line-height:1.2; }
+h2 { font-size:1.12rem; margin:0 0 8px; }
+p { line-height:1.48; }
+.muted { color:#b4c3ca; font-size:.9rem; }
+.small { font-size:.78rem; }
+.progress { display:flex; gap:6px; margin:15px 0 12px; }
+.progress span { height:4px; border-radius:10px; background:#43535e; flex:1; }
+.progress span.done { background:#a4e4d1; }
+.frame { background:#081014; position:relative; overflow:hidden; border-radius:12px; touch-action:pan-y; min-height:185px; }
+.frame.zoom { touch-action:none; }
+.frame img { display:block; width:100%; height:auto; transform-origin:top left; user-select:none; -webkit-user-drag:none; will-change:transform; }
+.frame:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible { outline:3px solid #c0f4dd; outline-offset:2px; }
+.error { display:none; background:#48332a; color:#fff0dd; border:1px solid #8e6152; border-radius:10px; padding:12px; margin-top:6px; }
+.error.visible { display:block; }
+.controls { display:flex; gap:8px; margin:9px 0 0; }
+button { cursor:pointer; min-height:46px; border-radius:12px; background:#293c44; border:1px solid #68818a; color:#f0f8f8; padding:9px 12px; font-size:.92rem; }
+.controls button { flex:1; }
+button.primary { background:#b6e9d8; color:#112b2d; border-color:#b6e9d8; font-weight:750; }
+button.ghost { background:transparent; border-color:#526772; }
+button[disabled] { opacity:.45; cursor:not-allowed; }
+.card { margin-top:15px; background:#1b2a32; border:1px solid #43545e; border-radius:14px; padding:14px; }
+.choice { display:block; width:100%; margin:8px 0; text-align:left; font-size:1rem; line-height:1.32; background:#253842; }
+.choice[aria-pressed=true] { background:#b6e9d8; color:#112b2d; border-color:#b6e9d8; font-weight:680; }
+.choice[aria-pressed=true]::before { content:'✓ '; }
+.row { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; margin-top:14px; }
+.row button { flex:1; }
+.justification { width:100%; min-height:78px; padding:12px; background:#101f26; color:#ebf2f5; font:inherit; border:1px solid #637986; border-radius:12px; resize:vertical; }
+.notes { background:#203338; border-left:3px solid #9dd6c9; padding:12px; border-radius:8px; font-size:.92rem; }
+.meta { margin-top:20px; padding-top:14px; border-top:1px solid #415560; color:#aebcc4; font-size:.76rem; line-height:1.6; }
+a { color:#a7e2d2; }
+.pill { display:inline-block; background:#34484e; border:1px solid #526a70; padding:4px 8px; border-radius:100px; font-size:.78rem; }
+.hidden { display:none !important; }
+
+/* 00A comparison: original and two equally sized framing decisions.
+   The right-edge crop changes position rather than zoom level.
+   The image is cropped via CSS, never re-generated or digitally enhanced. */
+.crop-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:14px 0 10px}
+.crop-choice{min-height:52px;padding:9px 5px;border:1px solid #657b87;border-radius:10px;background:#283c47;color:#f1f6f7;font-size:.84rem;line-height:1.18;font-weight:650;overflow-wrap:anywhere}
+.crop-choice[aria-pressed="true"]{background:#ace9da;color:#0a292d;border-color:#ace9da}
+.crop-frame{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:12px;background:#071017;border:1px solid #546b75;isolation:isolate}
+.crop-frame img{display:block;width:100%;height:100%;object-fit:fill;transform:scale(1);transform-origin:52% 55%;transition:transform 180ms ease-out;user-select:none;-webkit-user-drag:none}
+.crop-frame.tight img{transform:scale(1.58)}
+.crop-frame.art img{transform:scale(1.58);transform-origin:100% 55%}
+.crop-guide{position:absolute;pointer-events:none;left:19.1%;top:20.2%;width:63.3%;height:63.3%;border:2px dashed rgba(245,252,255,.92);box-shadow:0 0 0 300px rgba(0,0,0,.1),inset 0 0 0 1px rgba(0,0,0,.35)}
+/* Same crop area as option 2, horizontally moved to the right image edge. */
+.crop-art-guide{position:absolute;pointer-events:none;left:36.7%;top:20.2%;width:63.3%;height:63.3%;border:2px dashed #f0bd7e;box-shadow:0 0 0 1px rgba(0,0,0,.45)}
+.crop-frame.tight .crop-guide,.crop-frame.tight .crop-art-guide,.crop-frame.art .crop-guide,.crop-frame.art .crop-art-guide{display:none}
+.crop-tag{position:absolute;bottom:10px;left:10px;background:rgba(9,22,31,.87);color:#fff;padding:5px 9px;border-radius:7px;font-size:.78rem}
+.crop-guide-key{font-size:.78rem;color:#beced4;margin:8px 0 0;line-height:1.4}
+.crop-guide-key i{display:inline-block;width:15px;height:11px;margin:0 4px 0 10px;border:2px dashed #eee;vertical-align:-1px}
+.crop-guide-key i:first-child{margin-left:0}
+.crop-guide-key i.art-key{border-color:#f0bd7e}
+.crop-frame.tight~.crop-guide-key,.crop-frame.art~.crop-guide-key{display:none}
+.crop-error{margin-top:8px;padding:11px;border:1px solid #d8988a;border-radius:8px;color:#ffdcd6;background:#402b33}
+.crop-explainer{margin:13px 0;border:1px solid #5c7181;border-radius:12px;padding:12px;background:#1e303c}
+.crop-explainer summary{cursor:pointer;font-weight:650}
+.crop-explainer p{font-size:.9rem;line-height:1.5}
+@media(prefers-reduced-motion:reduce){.crop-frame img{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">VISUAL ACADEMY · JAKSO 00A · KÄYTTÄJÄTESTI V4</div>
+<h1>Sama kuva – eri tarkoitus, eri rajaus</h1>
+<p class="muted">Katso valokuvaa. Et tarvitse vielä säätimiä, käyriä etkä histogrammia. Tärkeintä on oma havaintosi. Lopussa kokeillaan, miten rajaus muuttaa viestiä.</p>
+<div class="progress" aria-label="Harjoituksen vaiheet"><span id="progress0"></span><span id="progress1"></span><span id="progress2"></span><span id="progress3"></span><span id="progress4"></span></div>
+<div id="photoShell"><div class="frame" id="frame" role="region" tabindex="0" aria-label="Valokuvan tarkastelu. Suurenna kahdella sormella kuvan päältä; suurennettuna liikuta yhdellä sormella.">
+<img id="photo" draggable="false" alt="Helsingin Lasipalatsin raitiovaunupysäkki hämärässä, katumaisema ja raitiovaunu" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Lasipalatsi_tram_stop_at_night.jpg/1280px-Lasipalatsi_tram_stop_at_night.jpg" />
+</div>
+<div class="error" id="imageError" role="alert">Valokuvaa ei voitu ladata. Tämä testiversio tarvitsee verkkoyhteyden. <a href="https://commons.wikimedia.org/wiki/File:Lasipalatsi_tram_stop_at_night.jpg" target="_blank" rel="noopener noreferrer">Avaa kuva sen alkuperäisellä sivulla</a>, äläkä arvioi tehtävää ilman kuvaa.</div>
+<div class="controls"><button id="zoom" type="button" aria-pressed="false">Suurenna 1,8×</button><button id="reset" type="button">Palauta koko kuva</button></div>
+<p class="muted small">Kuvan päällä voit zoomata kahdella sormella. Suurennettua kuvaa voit siirtää yhdellä sormella. Ilman suurennusta sivu vierii normaalisti.</p></div>
+<section id="steps" class="card" aria-live="polite"></section>
+<div class="meta">
+<strong>Aito valokuva:</strong> JIP, <em>Lasipalatsi tram stop at night</em> (24.3.2016),
+<a href="https://commons.wikimedia.org/wiki/File:Lasipalatsi_tram_stop_at_night.jpg" target="_blank" rel="noopener noreferrer">lähde Wikimedia Commonsissa</a>,
+<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.
+Rajausvertailussa samaa kuvaa näytetään alkuperäisenä ja kahdella samankokoisella rajauksella eri kohdista; lähteen pikseliarvoja ei muuteta. Rajaukset ovat testiluonnoksia, joiden sommittelu tarkistetaan käyttäjätestissä. Verkkokuva on vain tähän prototyyppiin; lopullinen offline-PWA vaatii paikallisen, teknisesti tarkistetun kuvatiedoston.
+Ei pisteitä, käyttäjätiliä tai tietojen lähettämistä. Vastauksia ei tallenneta.
+</div>
+</main>
+<script>
+'use strict';
+const steps=document.getElementById('steps');
+const photo=document.getElementById('photo');
+const frame=document.getElementById('frame');
+const zoomBtn=document.getElementById('zoom');
+const answers={focus:'',poster:'',info:'',why:''};
+let stage=0;
+const choiceSets={
+ focus:[['tram','Raitiovaunu'],['lights','Valot ja iltatunnelma'],['stop','Pysäkki ja ympäristö'],['other','Jokin muu / en ole varma']],
+ poster:[['mood','Illan tunnelma ja valojen kontrasti'],['tram','Raitiovaunun ja pysäkin tunnistettavuus'],['context','Ympäristön yksityiskohdat'],['other','Jokin muu']],
+ info:[['keep','Käyttäisin kuvaa suunnilleen ennallaan'],['test','Tutkisin, saisiko ympäristön yksityiskohtia paremmin esiin'],['new','Harkitsisin toista valokuvaa'],['unknown','Tarvitsisin lisätietoja käyttötarpeesta']],
+ why:[['visible','Keskeiset asiat erottuvat jo riittävästi'],['dark','Osa tärkeästä ympäristöstä jää pimeäksi'],['atmos','Tunnelma on myös osa kuvan sisältöä'],['other','Muu peruste / en ole varma']]
+};
+const safe=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+const label=(key,val)=>choiceSets[key].find(x=>x[0]===val)?.[1]||'Ei valintaa';
+function buttons(key){return choiceSets[key].map(([value,title])=>`<button class="choice" data-answer="${key}" data-value="${value}" aria-pressed="${answers[key]===value}">${safe(title)}</button>`).join('');}
+function renderStep(){
+ document.getElementById('photoShell').classList.toggle('hidden',stage===4);
+ for(let i=0;i<5;i++)document.getElementById('progress'+i).classList.toggle('done',i<=stage);
+ if(stage===0){steps.innerHTML=`<span class="pill">1/5 · Havainnoi</span><h2>Katso kuvaa rauhassa</h2><p>Mikä kiinnitti ensimmäiseksi huomiosi? Kaikki havainnot ovat mahdollisia.</p>${buttons('focus')}<div class="row"><button class="primary" data-next="1" ${answers.focus?'':'disabled'}>Jatka →</button></div>`;}
+ if(stage===1){steps.innerHTML=`<span class="pill">2/5 · Juliste</span><h2>Tunnelmallinen kaupunkijuliste</h2><p>Valokuva tulee kaupunkia esittelevään iltajulisteeseen. <strong>Mitä kuvan ominaisuutta suojelisit ennen kaikkea?</strong></p>${buttons('poster')}<p class="muted small">Yksi valinta riittää tähän kokeeseen. Se ei ole oikean maun testi.</p><div class="row"><button class="ghost" data-next="0">← Takaisin</button><button class="primary" data-next="2" ${answers.poster?'':'disabled'}>Jatka →</button></div>`;}
+ if(stage===2){steps.innerHTML=`<span class="pill">3/5 · Tiedotus</span><h2>Sama kuva, eri tehtävä</h2><p>Kuvaa ehdotetaan kaupunkiliikenteen tiedotusjuttuun. Lukijan pitäisi hahmottaa pysäkki ja sen ympäristö. <strong>Mikä olisi oma ensimmäinen päätöksesi?</strong></p>${buttons('info')}<p style="margin-bottom:6px">Mikä kuvaan liittyvä havainto tukee päätöstäsi?</p>${buttons('why')}<div class="row"><button class="ghost" data-next="1">← Takaisin</button><button class="primary" data-next="3" ${answers.info&&answers.why?'':'disabled'}>Katso päätöksiäsi →</button></div>`;}
+ if(stage===3){steps.innerHTML=`<span class="pill">4/5 · Oivallus</span><h2>Mitä muuttui?</h2><p><strong>Ensihavaintosi:</strong> ${safe(label('focus',answers.focus))}.</p><p><strong>Julisteessa säilyttäisit:</strong> ${safe(label('poster',answers.poster))}.</p><p><strong>Tiedotuskuvassa päättäisit:</strong> ${safe(label('info',answers.info))}.</p><p><strong>Perustelusi:</strong> ${safe(label('why',answers.why))}.</p><div class="notes"><strong>Opittava ajatus:</strong> Kuvaa ei muuteta automaattisesti siksi, että se on tumma. Sama valokuva voi palvella yhtä tarkoitusta hyvin ja olla toisessa puutteellinen. Päätös tarvitsee tavoitteen, havainnon ja tarvittaessa kokeilun. Myös alkuperäisen säilyttäminen tai uuden kuvan valitseminen voi olla hyvä valinta.</div><p class="muted">Tämä ei ole arvosana eikä todiste koko kuvankäsittelyn osaamisesta. Seuraavaksi katsotaan, miten rajauksen sijainti vaikuttaa samaan kuvaan, vaikka rajauskoko ei muuttuisi.</p><div class="row"><button class="ghost" data-next="2">← Tarkista vastaus</button><button class="primary" data-next="4" type="button">Vertaa kolmea rajausta →</button></div>`;}
+ if(stage===4){steps.innerHTML=`
+  <span class="pill">5/5 · Rajauksen vaikutus</span>
+  <h2>Mitä kuva kertoo, kun rajaat sen?</h2>
+  <p>Koko kuva näyttää ympäristön. Kaksi muuta vaihtoehtoa ovat <strong>täsmälleen samankokoisia rajauksia</strong>: ensimmäinen korostaa ratikkaa, toinen on siirretty kuvan oikeaan reunaan. Mitä sijainnin muutos tekee kuvan viestille?</p>
+  <div class="crop-switch" role="group" aria-label="Valitse rajaus">
+    <button type="button" class="crop-choice" data-crop="whole" aria-pressed="true">Koko kuva</button>
+    <button type="button" class="crop-choice" data-crop="tight" aria-pressed="false">Ratikka esiin</button>
+    <button type="button" class="crop-choice" data-crop="art" aria-pressed="false">Rajaus oikeassa reunassa</button>
+  </div>
+  <div class="crop-frame" id="cropFrame" role="img" aria-label="Saman Lasipalatsin valokuvan rajausvertailu">
+    <img id="cropPhoto" alt="Helsingin Lasipalatsin yöllinen raitiovaunupysäkki" draggable="false">
+    <span class="crop-guide" id="cropGuide" aria-hidden="true"></span>
+    <span class="crop-art-guide" aria-hidden="true"></span>
+    <span class="crop-tag" id="cropTag">Kokonaisuus</span>
+  </div>
+  <p class="crop-guide-key" id="cropLegend"><i></i> Ratikka esiin <i class="art-key"></i> Rajaus oikeassa reunassa — katkoviivat näyttävät kaksi yhtä suurta rajausaluetta koko kuvassa.</p>
+  <div class="crop-error" id="cropError" role="alert" hidden>Kuva ei latautunut. Rajausvertailua ei voi arvioida ilman oikeaa valokuvaa. Tarkista verkkoyhteys.</div>
+  <p class="muted small">Kokeile vaihtaa vaihtoehtoja muutaman kerran. Rajaus toimii vain näyttämällä <strong>saman valokuvan pikseleitä</strong> eri kokoisessa näkymässä. Se ei luo uutta sisältöä.</p>
+  <div class="notes">
+    <strong>Katso ja päätä itse:</strong>
+    <p>1. Kumpi kahdesta yhtä suuresta rajauksesta ohjaa katseen ratikkaan paremmin? Mitä oikeaan reunaan siirtäminen tekee sommittelulle?</p>
+    <p>2. Mitä kumpikin rajaus pudottaa pois: pysäkki, ympäristö, valot, yöfiilis tai jotakin muuta?</p>
+    <p>3. Valitse yksi rajaus kaupunkiliikenteen juttuun ja toinen taiteelliseen julkaisuun. Miksi valitsit eri tavoin — tai saman rajauksen?</p>
+  </div>
+  <details class="crop-explainer"><summary>Mitä rajauksesta kannattaa ymmärtää?</summary>
+    <p>Rajaus ohjaa katsetta valitsemalla, <em>mitä jätetään näkyviin</em>. Se ei lisää yksityiskohtia eikä paranna alkuperäisen tarkennusta. Tiukassa rajauksessa kohde voi näkyä suurempana, mutta ympäristön merkitys heikkenee ja jäljelle jää vähemmän lähdepikseleitä. Tässä molempien rajattujen vaihtoehtojen koko on sama: <strong>vain rajauksen paikka muuttuu</strong>. Siksi niiden ero liittyy näkymään jääviin kohteisiin ja sommitteluun, ei suurempaan zoomaukseen. Paras rajaus riippuu käyttötarkoituksesta. Myös koko kuva voi olla paras.</p>
+    <p>Huomautus: tämä rajausesimerkki on vasta käyttäjätesti. Tarkistamme yhdessä, osuuko ehdotettu alue hyvin ratikkaan.</p>
+  </details>
+  <div class="row"><button class="ghost" data-next="3">← Takaisin yhteenvetoon</button><button id="restart" class="primary" type="button">Aloita alusta</button></div>
+  `;
+    const preview=steps.querySelector('#cropPhoto');
+    preview.src=photo.currentSrc||photo.src;
+    const fail=()=>{steps.querySelector('#cropError').hidden=false;};
+    preview.addEventListener('error',fail);
+    if(preview.complete && !preview.naturalWidth)fail();
+    function setCrop(which){
+      if(!['whole','tight','art'].includes(which))return;
+      const viewer=steps.querySelector('#cropFrame');
+      viewer.classList.toggle('tight',which==='tight');
+      viewer.classList.toggle('art',which==='art');
+      const titles={whole:'Kokonaisuus',tight:'Ratikka esiin',art:'Rajaus oikeassa reunassa'};
+      steps.querySelector('#cropTag').textContent=titles[which];
+      steps.querySelector('#cropLegend').hidden=which!=='whole';
+      viewer.setAttribute('aria-label','Saman valokuvan rajaus: '+titles[which]);
+      for(const b of steps.querySelectorAll('[data-crop]')) b.setAttribute('aria-pressed',String(b.dataset.crop===which));
+    }
+    for(const b of steps.querySelectorAll('[data-crop]'))b.addEventListener('click',()=>setCrop(b.dataset.crop));
+    setCrop('whole');
+  }
+ steps.querySelectorAll('[data-answer]').forEach(btn=>btn.addEventListener('click',()=>{answers[btn.dataset.answer]=btn.dataset.value;renderStep();}));
+ steps.querySelectorAll('[data-next]').forEach(btn=>btn.addEventListener('click',()=>{stage=Number(btn.dataset.next);renderStep();}));
+ const restart=steps.querySelector('#restart');if(restart)restart.addEventListener('click',()=>{Object.keys(answers).forEach(k=>answers[k]='');stage=0;renderStep();});
+}
+photo.addEventListener('error',()=>document.getElementById('imageError').classList.add('visible'));
+photo.addEventListener('load',()=>document.getElementById('imageError').classList.remove('visible'));
+// Sama scoped pinch / pan -malli kuin käyttäjän hyväksymässä 00B-v3:ssa.
+let scale=1,tx=0,ty=0,pinch=null;
+const pointers=new Map();
+const clamp=(v,a,b)=>Math.min(Math.max(v,a),b);
+function clampPosition(){const w=frame.clientWidth,h=frame.clientHeight;tx=clamp(tx,Math.min(0,w*(1-scale)),0);ty=clamp(ty,Math.min(0,h*(1-scale)),0);}
+function renderZoom(){clampPosition();photo.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;frame.classList.toggle('zoom',scale>1.001);zoomBtn.textContent=scale>1.001?'Palauta koko kuva':'Suurenna 1,8×';zoomBtn.setAttribute('aria-pressed',String(scale>1.001));}
+function zoomAt(next,p){const current=scale,s=clamp(next,1,3);tx=p.x-(p.x-tx)*s/current;ty=p.y-(p.y-ty)*s/current;scale=s;if(s===1){tx=0;ty=0;}renderZoom();}
+function local(e){const r=frame.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function midpoint(a,b){return{x:(a.x+b.x)/2,y:(a.y+b.y)/2};}
+function distance(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
+function startPinch(){const[a,b]=[...pointers.values()],mid=midpoint(a,b);pinch={dist:Math.max(1,distance(a,b)),scale,contentX:(mid.x-tx)/scale,contentY:(mid.y-ty)/scale};}
+frame.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();frame.setPointerCapture(e.pointerId);pointers.set(e.pointerId,local(e));if(pointers.size>=2)startPinch();});
+frame.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;const pt=local(e),prev=pointers.get(e.pointerId);pointers.set(e.pointerId,pt);if(pointers.size>=2){if(!pinch)startPinch();const[a,b]=[...pointers.values()],mid=midpoint(a,b);scale=clamp(pinch.scale*distance(a,b)/pinch.dist,1,3);tx=mid.x-pinch.contentX*scale;ty=mid.y-pinch.contentY*scale;}else if(scale>1.001){tx+=pt.x-prev.x;ty+=pt.y-prev.y;}renderZoom();});
+function endPointer(e){pointers.delete(e.pointerId);pinch=null;}
+for(const ev of ['pointerup','pointercancel','lostpointercapture'])frame.addEventListener(ev,endPointer);
+frame.addEventListener('keydown',e=>{if(scale<=1.001)return;const keys={ArrowLeft:[24,0],ArrowRight:[-24,0],ArrowUp:[0,24],ArrowDown:[0,-24]};if(keys[e.key]){e.preventDefault();tx+=keys[e.key][0];ty+=keys[e.key][1];renderZoom();}else if(e.key==='Escape'){zoomAt(1,{x:frame.clientWidth/2,y:frame.clientHeight/2});}});
+zoomBtn.addEventListener('click',()=>zoomAt(scale>1.001?1:1.8,{x:frame.clientWidth/2,y:frame.clientHeight/2}));
+document.getElementById('reset').addEventListener('click',()=>zoomAt(1,{x:frame.clientWidth/2,y:frame.clientHeight/2}));
+window.addEventListener('resize',renderZoom);
+renderStep();renderZoom();
+</script>
+</body>
+</html>
