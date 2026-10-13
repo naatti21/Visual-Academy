@@ -79,3 +79,71 @@ test('00A mobile: no horizontal overflow, all source assets are local, and zoom 
  }
  expect(remote).toEqual([]);
 });
+
+
+// Regression: Android content:// viewers can disallow history.replaceState.
+// The language menu must still translate the entire current lesson even when
+// the browser denies the URL change with SecurityError.
+test('00A language switching survives blocked History.replaceState',async({page})=>{
+ const errors=[];
+ page.on('pageerror',e=>errors.push(String(e)));
+ await page.goto('/lessons/00a.html?lang=en');
+ await page.evaluate(()=>{
+   History.prototype.replaceState=()=>{throw new DOMException('URL mutation denied','SecurityError');};
+ });
+ await page.locator('#langSelect').selectOption('fi');
+ await expect(page.locator('#langSelect')).toHaveValue('fi');
+ await expect(page.locator('html')).toHaveAttribute('lang','fi');
+ await expect(page.locator('#heading')).toContainText('Sama kuva');
+ await expect(page.locator('h2')).toHaveText('Katso kuvaa rauhassa');
+ await expect(page.locator('.progress')).toHaveAttribute('aria-label','Harjoituksen vaiheet');
+ await page.locator('[data-answer="focus"]').first().click();
+ await page.locator('[data-next="1"]').click();
+ await page.locator('#langSelect').selectOption('en');
+ await expect(page.locator('h2')).toHaveText('An atmospheric city poster');
+ await page.locator('#langSelect').selectOption('fi');
+ await expect(page.locator('h2')).toHaveText('Tunnelmallinen kaupunkijuliste');
+ await expect(page.locator('[data-answer="poster"]').first()).toHaveAttribute('aria-pressed','false');
+ await page.locator('[data-answer="poster"]').first().click();
+ await page.locator('[data-next="2"]').click();
+ await page.locator('[data-answer="info"]').first().click();
+ await page.locator('[data-answer="why"]').first().click();
+ await page.locator('[data-next="3"]').click();
+ await page.locator('#langSelect').selectOption('en');
+ await expect(page.locator('h2')).toHaveText('What changed?');
+ await expect(page.locator('#steps')).toContainText('The tram');
+ await page.locator('[data-next="4"]').click();
+ await page.locator('[data-crop="transit"]').click();
+ await page.locator('#langSelect').selectOption('fi');
+ await expect(page.locator('h2')).toHaveText('Mitä kuva kertoo, kun rajaat sen?');
+ await expect(page.locator('#cropTag')).toHaveText('Tiedotuskuva');
+ await expect(page.locator('.crop-switch')).toHaveAttribute('aria-label','Valitse rajaus');
+ await expect(page.locator('#cropLegend')).toBeHidden();
+ expect(errors).toEqual([]);
+});
+
+test('00A all five stages and semantic controls localize in both languages',async({page})=>{
+ await page.goto('/lessons/00a.html?lang=en');
+ const expected={
+  fi:['Katso kuvaa rauhassa','Tunnelmallinen kaupunkijuliste','Sama kuva, eri tehtävä','Mitä muuttui?','Mitä kuva kertoo, kun rajaat sen?'],
+  en:['Take a moment to look','An atmospheric city poster','Same image, new purpose','What changed?','How does cropping change the story?']
+ };
+ for(let step=0;step<5;step++){
+  for(const lang of ['fi','en']){
+   await page.locator('#langSelect').selectOption(lang);
+   await expect(page.locator('html')).toHaveAttribute('lang',lang);
+   await expect(page.locator('#langSelect')).toHaveAttribute('aria-label',lang==='fi'?'Kieli':'Language');
+   await expect(page.locator('.progress')).toHaveAttribute('aria-label',lang==='fi'?'Harjoituksen vaiheet':'Learning stages');
+   await expect(page.locator('#steps h2')).toHaveText(expected[lang][step]);
+   if(step===4){
+    await expect(page.locator('.crop-switch')).toHaveAttribute('aria-label',lang==='fi'?'Valitse rajaus':'Choose a crop');
+    await page.locator('[data-crop="art"]').click();
+    await expect(page.locator('#cropTag')).toHaveText(lang==='fi'?'Taiteellinen rajaus':'Artistic crop');
+   }
+  }
+  if(step===0)await page.locator('[data-answer="focus"]').first().click();
+  if(step===1)await page.locator('[data-answer="poster"]').first().click();
+  if(step===2){await page.locator('[data-answer="info"]').first().click();await page.locator('[data-answer="why"]').first().click();}
+  if(step<4)await page.locator(`[data-next="${step+1}"]`).click();
+ }
+});
